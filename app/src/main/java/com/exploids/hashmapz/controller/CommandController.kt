@@ -3,6 +3,8 @@ package com.exploids.hashmapz.controller
 import androidx.compose.runtime.currentRecomposeScope
 import com.exploids.hashmapz.command.Command
 import com.exploids.hashmapz.model.CurrentState
+import java.util.*
+import kotlin.collections.ArrayDeque
 
 class CommandController(val currentState: CurrentState) {
 
@@ -10,6 +12,7 @@ class CommandController(val currentState: CurrentState) {
         currentState.usedKey = key
         currentState.usedValue = value
         currentState.usedHashcode = key.hashCode()
+        currentState.actionHasFinished = false
 
         //calculateSteps
 
@@ -27,27 +30,14 @@ class CommandController(val currentState: CurrentState) {
         }
     }
 
-    fun checkIfLastCommandWasExecuted() : Boolean {
-        var nextCommandDeck: ArrayDeque<Command> = currentState.nextCommands
-        if (nextCommandDeck.isEmpty()) {
-            return true
-        }
-
-        return false
-    }
-
-    fun sendActionHasFinished() {
-        //ToDo
-    }
-
     /**
      * Executes the next Command if it exist in the nextCommands Stack
      */
     fun executeNextCommand() {
         var nextCommand: Command
-        var nextCommandDeck: ArrayDeque<Command> = currentState.nextCommands
+        var nextCommandsDeck: ArrayDeque<Command> = currentState.nextCommands
 
-        nextCommand = nextCommandDeck.first();
+        nextCommand = nextCommandsDeck.first();
         nextCommand.doCommand()
     }
 
@@ -64,7 +54,40 @@ class CommandController(val currentState: CurrentState) {
 
     }
 
-    fun prevCommand() {
+    fun checkIfLastCommandWasExecuted() : Boolean {
+        var nextCommandDeck: ArrayDeque<Command> = currentState.nextCommands
+        if (nextCommandDeck.isEmpty()) {
+            return true
+        }
 
+        return false
     }
+
+    fun sendActionHasFinished() {
+        currentState.actionHasFinished = true
+    }
+
+    fun prevCommand() {
+        if (!currentState.prevCommands.isEmpty()) {
+            executePrevCommand()
+            updatePrevCommand()
+        }
+    }
+
+    fun executePrevCommand() {
+        var prevCommand: Command
+        var prevCommandsStack: Stack<Command> = currentState.prevCommands
+
+        prevCommand = prevCommandsStack.peek()
+        prevCommand.undoCommand()
+    }
+
+    fun updatePrevCommand() {
+        var currentCommand: Command = currentState.currentCommand
+        var prevCommand: Command = currentState.prevCommands.pop()
+        currentState.prevCommands.add(currentCommand)
+        currentState.currentCommand = prevCommand
+    }
+
+
 }

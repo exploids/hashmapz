@@ -12,7 +12,8 @@ data class CurrentState(var currentIndex: Int,
                         var usedHashcode: Int,
                         var currentDescription: String,
                         var prevCommands: Stack<Command>,
-                        var nextCommands: ArrayDeque<Command>
+                        var nextCommands: ArrayDeque<Command>,
+                        var actionHasFinished: Boolean
 
 
 
