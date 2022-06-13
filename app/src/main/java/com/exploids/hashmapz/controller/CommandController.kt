@@ -1,7 +1,7 @@
 package com.exploids.hashmapz.controller
 
 import androidx.compose.runtime.currentRecomposeScope
-import com.exploids.hashmapz.command.Command
+import com.exploids.hashmapz.command.*
 import com.exploids.hashmapz.model.CurrentState
 import java.util.*
 import kotlin.collections.ArrayDeque
@@ -12,14 +12,43 @@ class CommandController(val currentState: CurrentState) {
         currentState.usedKey = key
         currentState.usedValue = value
         currentState.usedHashcode = key.hashCode()
+        currentState.usedIndex = key.hashCode() % currentState.mapSize
         currentState.actionHasFinished = false
 
-        //calculateSteps
-
-        //Fill next steck
-
+        calculateStepsAdd(currentState.nextCommands)
 
         nextCommand()
+    }
+
+    fun calculateStepsAdd(commandDeck: ArrayDeque<Command>)  {
+        val keyList : LinkedList<String> = currentState.keyList
+        val key : String = currentState.usedKey
+        var index : Int = currentState.usedIndex
+        if ( keyList.isEmpty() || keyList.get(index) == null ) {
+            commandDeck.addLast(CalculateIndexCommand())
+            commandDeck.addLast(GoToIndexCommand())
+            commandDeck.addLast(CheckFreeSlotCommand())
+            commandDeck.addLast(InsertEntriesCommand())
+        } else if (keyList.get(index) == key) {
+            commandDeck.addLast(CalculateIndexCommand())
+            commandDeck.addLast(GoToIndexCommand())
+            commandDeck.addLast(CheckFreeSlotCommand())
+            commandDeck.addLast(UpdateValueCommand())
+        } else {
+            commandDeck.addLast(CalculateIndexCommand())
+            commandDeck.addLast(GoToIndexCommand())
+            while(keyList.get(index) != null) {
+                commandDeck.addLast(CheckFreeSlotCommand())
+                commandDeck.addLast(GoToIndexInStepsCommand())
+                index += currentState.steps
+                index = index % currentState.mapSize
+            }
+            if (keyList.get(index) == key) {
+                commandDeck.addLast(UpdateValueCommand())
+            } else {
+                commandDeck.addLast(InsertEntriesCommand())
+            }
+        }
     }
 
     fun nextCommand() {
