@@ -15,7 +15,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
@@ -23,6 +22,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.exploids.hashmapz.ui.theme.HashmapzTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -31,12 +34,21 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val navController = rememberNavController()
             HashmapzTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Home()
+                NavHost(navController = navController, startDestination = "home") {
+                    composable("home") {
+                        Home(navController)
+                    }
+                    composable("tutorial") {
+                        Tutorial(navController)
+                    }
+                    composable("wiki") {
+                        Wiki(navController)
+                    }
+                    composable("about") {
+                        About(navController)
+                    }
                 }
             }
         }
@@ -45,7 +57,7 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun Home() {
+fun Home(navController: NavController) {
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden
@@ -58,7 +70,7 @@ fun Home() {
     ) {
         Scaffold(
             bottomBar = {
-                HomeBottomBar(scope, sheetState)
+                HomeBottomBar(navController, scope, sheetState)
             }
         ) {
             Column(
@@ -123,11 +135,15 @@ fun Home() {
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun HomeBottomBar(scope: CoroutineScope, sheetState: ModalBottomSheetState) {
+fun HomeBottomBar(
+    navController: NavController,
+    scope: CoroutineScope,
+    sheetState: ModalBottomSheetState
+) {
     var showMenu by remember { mutableStateOf(false) }
     BottomAppBar(
         icons = {
-            IconButton(onClick = {  showMenu = !showMenu }) {
+            IconButton(onClick = { showMenu = !showMenu }) {
                 Icon(
                     Icons.Filled.MoreVert,
                     contentDescription = "Localized description",
@@ -155,9 +171,15 @@ fun HomeBottomBar(scope: CoroutineScope, sheetState: ModalBottomSheetState) {
                 expanded = showMenu,
                 onDismissRequest = { showMenu = false }
             ) {
-                DropdownMenuItem(text = { Text("Wiki") }, onClick = { /*TODO*/ })
-                DropdownMenuItem(text = { Text("Tutorial") }, onClick = { /*TODO*/ })
-                DropdownMenuItem(text = { Text("About") }, onClick = { /*TODO*/ })
+                DropdownMenuItem(text = { Text("Wiki") }, onClick = {
+                    navController.navigate("wiki")
+                })
+                DropdownMenuItem(text = { Text("Tutorial") }, onClick = {
+                    navController.navigate("tutorial")
+                })
+                DropdownMenuItem(text = { Text("About") }, onClick = {
+                    navController.navigate("about")
+                })
             }
         },
         floatingActionButton = {
@@ -236,6 +258,6 @@ fun RemoveBottomSheet() {
 @Composable
 fun DefaultPreview() {
     HashmapzTheme {
-        Home()
+        Home(rememberNavController())
     }
 }
