@@ -24,29 +24,24 @@ class CommandController(val currentState: CurrentState) {
         val keyList : LinkedList<String> = currentState.keyList
         val key : String = currentState.usedKey
         var index : Int = currentState.usedIndex
-        if ( keyList.isEmpty() || keyList.get(index) == null ) {
+        if ( keyList.get(index) == null ) {
             commandDeck.addLast(CalculateIndexCommand())
             commandDeck.addLast(GoToIndexCommand())
             commandDeck.addLast(CheckFreeSlotCommand())
             commandDeck.addLast(InsertEntriesCommand())
-        } else if (keyList.get(index) == key) {
-            commandDeck.addLast(CalculateIndexCommand())
-            commandDeck.addLast(GoToIndexCommand())
-            commandDeck.addLast(CheckFreeSlotCommand())
-            commandDeck.addLast(UpdateValueCommand())
         } else {
             commandDeck.addLast(CalculateIndexCommand())
             commandDeck.addLast(GoToIndexCommand())
-            while(keyList.get(index) != null) {
+            while(keyList.get(index) != null || keyList.get(index).equals(key)) {
                 commandDeck.addLast(CheckFreeSlotCommand())
+                commandDeck.addLast(CheckIfKeysAreEqualCommand())
+                if (keyList.get(index).equals(key)) {
+                    commandDeck.addLast(UpdateValueCommand())
+                    break
+                }
                 commandDeck.addLast(GoToIndexInStepsCommand())
                 index += currentState.steps
                 index = index % currentState.mapSize
-            }
-            if (keyList.get(index) == key) {
-                commandDeck.addLast(UpdateValueCommand())
-            } else {
-                commandDeck.addLast(InsertEntriesCommand())
             }
         }
     }
@@ -67,7 +62,7 @@ class CommandController(val currentState: CurrentState) {
         var nextCommandsDeck: ArrayDeque<Command> = currentState.nextCommands
 
         nextCommand = nextCommandsDeck.first();
-        nextCommand.doCommand()
+        nextCommand.doCommand(currentState)
     }
 
     /**
@@ -108,7 +103,7 @@ class CommandController(val currentState: CurrentState) {
         var prevCommandsStack: Stack<Command> = currentState.prevCommands
 
         prevCommand = prevCommandsStack.peek()
-        prevCommand.undoCommand()
+        prevCommand.undoCommand(currentState)
     }
 
     fun updatePrevCommand() {

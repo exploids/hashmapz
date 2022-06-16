@@ -1,11 +1,14 @@
 package com.exploids.hashmapz.command
 
+import com.exploids.hashmapz.model.CurrentState
+
 class GoToIndexInStepsCommand : Command {
-    override fun doCommand() {
-        TODO("Not yet implemented")
+
+    override fun doCommand(state: CurrentState) {
+        state.currentIndex = (state.currentIndex + state.steps) % state.mapSize
     }
 
-    override fun undoCommand() {
+    override fun undoCommand(state: CurrentState) {
         TODO("Not yet implemented")
     }
 
