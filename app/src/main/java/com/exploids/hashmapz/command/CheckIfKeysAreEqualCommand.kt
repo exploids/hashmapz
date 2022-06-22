@@ -5,8 +5,8 @@ import java.util.*
 
 class CheckIfKeysAreEqualCommand : Command {
     override fun doCommand(state: CurrentState) {
-        val keyList: LinkedList<String> = state.keyList
-        if (keyList.get(state.currentIndex).equals(state.usedKey)) {
+        val keyList: LinkedList<String?> = state.keyList
+        if (state.currentIndex?.let { keyList.get(it).equals(state.usedKey) } == true) {
                 state.isKeyEqual = true
             } else {
                 state.isKeyEqual = false

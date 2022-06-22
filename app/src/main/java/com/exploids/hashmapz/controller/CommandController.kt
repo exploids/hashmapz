@@ -7,24 +7,27 @@ import java.util.*
 import kotlin.collections.ArrayDeque
 
 class CommandController(val currentState: CurrentState) {
+    var usedIndex : Int = 0
+    var usedHashcode : Int = 0
+
 
     fun add(key: String, value: Int) {
         currentState.usedKey = key
         currentState.usedValue = value
-        currentState.usedHashcode = key.hashCode()
-        currentState.usedIndex = key.hashCode() % currentState.mapSize
+        usedHashcode = key.hashCode()
+        usedIndex = key.hashCode().mod(currentState.mapSize)
         currentState.actionHasFinished = false
-
         calculateStepsAdd(currentState.nextCommands)
+        currentState.currentCommand = currentState.nextCommands.first()
 
         nextCommand()
     }
 
     fun calculateStepsAdd(commandDeck: ArrayDeque<Command>)  {
-        val keyList : LinkedList<String> = currentState.keyList
-        val key : String = currentState.usedKey
-        var index : Int = currentState.usedIndex
-        if ( keyList.get(index) == null ) {
+        val keyList : LinkedList<String?> = currentState.keyList
+        val key : String? = currentState.usedKey
+        var index : Int? = usedIndex
+        if ( index?.let { keyList.get(it) } == null ) {
             commandDeck.addLast(CalculateIndexCommand())
             commandDeck.addLast(GoToIndexCommand())
             commandDeck.addLast(CheckFreeSlotCommand())
@@ -32,18 +35,24 @@ class CommandController(val currentState: CurrentState) {
         } else {
             commandDeck.addLast(CalculateIndexCommand())
             commandDeck.addLast(GoToIndexCommand())
-            while(keyList.get(index) != null || keyList.get(index).equals(key)) {
+            while(index?.let { keyList.get(it) } != null || index?.let { keyList.get(it).equals(key) } == true) {
                 commandDeck.addLast(CheckFreeSlotCommand())
                 commandDeck.addLast(CheckIfKeysAreEqualCommand())
-                if (keyList.get(index).equals(key)) {
+                if (index?.let { keyList.get(it).equals(key) } == true) {
                     commandDeck.addLast(UpdateValueCommand())
                     break
                 }
                 commandDeck.addLast(GoToIndexInStepsCommand())
-                index += currentState.steps
-                index = index % currentState.mapSize
+                index = index?.plus(currentState.steps)
+                index = index?.mod(currentState.mapSize)
+            }
+            if (index?.let { keyList.get(it).equals(null) } == true) {
+                commandDeck.addLast(CheckFreeSlotCommand())
+                commandDeck.addLast(CheckIfKeysAreEqualCommand())
+                commandDeck.addLast(InsertEntriesCommand())
             }
         }
+        currentState.nextCommands = commandDeck
     }
 
     fun nextCommand() {
@@ -70,11 +79,14 @@ class CommandController(val currentState: CurrentState) {
      */
     fun updateNextCommand(){
 
-        var currentCommand: Command = currentState.currentCommand
-        var nextCommand: Command = currentState.nextCommands.first()
-        currentState.prevCommands.add(currentCommand)
-        currentState.currentCommand = nextCommand
+        var currentCommand: Command? = currentState.currentCommand
+        print(currentState.nextCommands.first())
         currentState.nextCommands.removeFirst()
+        currentState.prevCommands.add(currentCommand)
+        if (!currentState.nextCommands.isEmpty()) {
+            var nextCommand: Command = currentState.nextCommands.first()
+            currentState.currentCommand = nextCommand
+        }
 
     }
 
@@ -107,8 +119,8 @@ class CommandController(val currentState: CurrentState) {
     }
 
     fun updatePrevCommand() {
-        var currentCommand: Command = currentState.currentCommand
-        var prevCommand: Command = currentState.prevCommands.pop()
+        var currentCommand: Command? = currentState.currentCommand
+        var prevCommand: Command? = currentState.prevCommands.pop()
         currentState.prevCommands.add(currentCommand)
         currentState.currentCommand = prevCommand
     }

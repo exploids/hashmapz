@@ -6,8 +6,8 @@ import java.util.*
 class CheckFreeSlotCommand : Command {
 
     override fun doCommand(state: CurrentState) {
-        val keyList: LinkedList<String> = state.keyList
-        if (keyList.get(state.currentIndex) == null) {
+        val keyList: LinkedList<String?> = state.keyList
+        if (state.currentIndex?.let { keyList.get(it) } == null) {
             state.isSlotFree = true
         } else {
             state.isSlotFree = false
