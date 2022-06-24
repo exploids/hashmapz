@@ -15,7 +15,7 @@ class CheckFreeSlotCommand : Command {
     }
 
     override fun undoCommand(state: CurrentState) {
-        TODO("Not yet implemented")
+        state.isSlotFree = null
     }
 
 }

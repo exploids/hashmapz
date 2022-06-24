@@ -2,12 +2,12 @@ package com.exploids.hashmapz.command
 
 import com.exploids.hashmapz.model.CurrentState
 
-class GoToIndexCommand : Command {
+class KeyNotFoundCommand : Command {
     override fun doCommand(state: CurrentState) {
-        state.currentIndex = state.usedIndex
+        state.keyNotFound = true
     }
 
     override fun undoCommand(state: CurrentState) {
-        state.currentIndex = null
+        state.keyNotFound = null
     }
 }

@@ -12,13 +12,15 @@ class CommandController(val currentState: CurrentState) {
 
 
     fun add(key: String, value: Int) {
+        currentState.nextCommands = ArrayDeque<Command>()
+        currentState.prevCommands = Stack<Command>()
         currentState.usedKey = key
         currentState.usedValue = value
         usedHashcode = key.hashCode()
         usedIndex = key.hashCode().mod(currentState.mapSize)
         currentState.actionHasFinished = false
-        calculateStepsAdd(currentState.nextCommands)
-        currentState.currentCommand = currentState.nextCommands.first()
+        calculateStepsAdd(currentState.nextCommands!!)
+        currentState.currentCommand = currentState.nextCommands!!.first()
 
         nextCommand()
     }
@@ -68,7 +70,7 @@ class CommandController(val currentState: CurrentState) {
      */
     fun executeNextCommand() {
         var nextCommand: Command
-        var nextCommandsDeck: ArrayDeque<Command> = currentState.nextCommands
+        var nextCommandsDeck: ArrayDeque<Command> = currentState.nextCommands!!
 
         nextCommand = nextCommandsDeck.first();
         nextCommand.doCommand(currentState)
@@ -80,18 +82,17 @@ class CommandController(val currentState: CurrentState) {
     fun updateNextCommand(){
 
         var currentCommand: Command? = currentState.currentCommand
-        print(currentState.nextCommands.first())
-        currentState.nextCommands.removeFirst()
-        currentState.prevCommands.add(currentCommand)
-        if (!currentState.nextCommands.isEmpty()) {
-            var nextCommand: Command = currentState.nextCommands.first()
+        currentState.nextCommands!!.removeFirst()
+        currentState.prevCommands!!.add(currentCommand)
+        if (!currentState.nextCommands!!.isEmpty()) {
+            var nextCommand: Command = currentState.nextCommands!!.first()
             currentState.currentCommand = nextCommand
         }
 
     }
 
     fun checkIfLastCommandWasExecuted() : Boolean {
-        var nextCommandDeck: ArrayDeque<Command> = currentState.nextCommands
+        var nextCommandDeck: ArrayDeque<Command> = currentState.nextCommands!!
         if (nextCommandDeck.isEmpty()) {
             return true
         }
@@ -104,7 +105,7 @@ class CommandController(val currentState: CurrentState) {
     }
 
     fun prevCommand() {
-        if (!currentState.prevCommands.isEmpty()) {
+        if (!currentState.prevCommands!!.isEmpty()) {
             executePrevCommand()
             updatePrevCommand()
         }
@@ -112,7 +113,7 @@ class CommandController(val currentState: CurrentState) {
 
     fun executePrevCommand() {
         var prevCommand: Command
-        var prevCommandsStack: Stack<Command> = currentState.prevCommands
+        var prevCommandsStack: Stack<Command> = currentState.prevCommands!!
 
         prevCommand = prevCommandsStack.peek()
         prevCommand.undoCommand(currentState)
@@ -120,10 +121,54 @@ class CommandController(val currentState: CurrentState) {
 
     fun updatePrevCommand() {
         var currentCommand: Command? = currentState.currentCommand
-        var prevCommand: Command? = currentState.prevCommands.pop()
-        currentState.prevCommands.add(currentCommand)
+        var prevCommand: Command? = currentState.prevCommands!!.pop()
+        currentState.nextCommands!!.addLast(currentCommand!!)
         currentState.currentCommand = prevCommand
     }
 
+    fun search(key: String) {
+        currentState.nextCommands = ArrayDeque<Command>()
+        currentState.prevCommands = Stack<Command>()
+        currentState.usedKey = key
+        usedIndex = key.hashCode().mod(currentState.mapSize)
+
+        calculateStepsSearch(currentState.nextCommands!!)
+        currentState.currentCommand = currentState.nextCommands!!.first()
+        nextCommand()
+    }
+
+    fun calculateStepsSearch(commandDeck: ArrayDeque<Command>) {
+        val keyList : LinkedList<String?> = currentState.keyList
+        val key : String? = currentState.usedKey
+        var index : Int? = usedIndex
+
+        if (keyList[index!!] == null) {
+            commandDeck.addLast(CalculateIndexCommand())
+            commandDeck.addLast(GoToIndexCommand())
+            commandDeck.addLast(CheckFreeSlotCommand())
+            commandDeck.addLast(KeyNotFoundCommand())
+        } else {
+            commandDeck.addLast(CalculateIndexCommand())
+            commandDeck.addLast(GoToIndexCommand())
+
+            while (keyList[index!!] != null) {
+                commandDeck.addLast(CheckFreeSlotCommand())
+                commandDeck.addLast(CheckIfKeysAreEqualCommand())
+                if (keyList[index!!].equals(key)) {
+                    commandDeck.addLast(ReturnValueCommand())
+                    break
+                }
+                commandDeck.addLast(GoToIndexInStepsCommand())
+                index = index?.plus(currentState.steps)
+                index = index?.mod(currentState.mapSize)
+            }
+            if (keyList[index!!] == null) {
+                commandDeck.addLast(CheckFreeSlotCommand())
+                commandDeck.addLast(CheckIfKeysAreEqualCommand())
+                commandDeck.addLast(KeyNotFoundCommand())
+            }
+        }
+        currentState.nextCommands = commandDeck
+    }
 
 }

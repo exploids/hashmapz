@@ -4,12 +4,12 @@ import com.exploids.hashmapz.model.CurrentState
 
 class UpdateValueCommand : Command {
     override fun doCommand(state: CurrentState) {
-        state.keyList[state.currentIndex!!] = state.usedKey
+        state.savedValue = state.valueList.get(state.currentIndex!!)
         state.valueList[state.currentIndex!!] = state.usedValue
     }
 
     override fun undoCommand(state: CurrentState) {
-        TODO("Not yet implemented")
+        state.valueList[state.currentIndex!!] = state.savedValue
     }
 
 }

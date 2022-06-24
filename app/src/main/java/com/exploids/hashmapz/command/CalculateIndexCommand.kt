@@ -10,6 +10,7 @@ class CalculateIndexCommand : Command{
     }
 
     override fun undoCommand(state: CurrentState) {
-        TODO("Not yet implemented")
+        state.usedHashcode = null
+        state.usedIndex = null
     }
 }

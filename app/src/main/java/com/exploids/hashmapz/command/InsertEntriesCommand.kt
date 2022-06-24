@@ -10,6 +10,9 @@ class InsertEntriesCommand : Command {
     }
 
     override fun undoCommand(state: CurrentState) {
-        TODO("Not yet implemented")
+        state.keyList[state.currentIndex!!] = null
+        state.valueList[state.currentIndex!!] = null
+        state.hashcodeList[state.currentIndex!!] = null
     }
+
 }

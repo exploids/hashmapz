@@ -5,11 +5,11 @@ import com.exploids.hashmapz.model.CurrentState
 class GoToIndexInStepsCommand : Command {
 
     override fun doCommand(state: CurrentState) {
-        state.currentIndex = (state.currentIndex?.plus(state.steps))?.rem(state.mapSize)
+        state.currentIndex = (state.currentIndex?.plus(state.steps))?.mod(state.mapSize)
     }
 
     override fun undoCommand(state: CurrentState) {
-        TODO("Not yet implemented")
+        state.currentIndex = (state.currentIndex?.minus(state.steps))?.mod(state.mapSize)
     }
 
 }

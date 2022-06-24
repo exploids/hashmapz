@@ -14,6 +14,6 @@ class CheckIfKeysAreEqualCommand : Command {
     }
 
     override fun undoCommand(state: CurrentState) {
-        TODO("Not yet implemented")
+        state.isKeyEqual = null
     }
 }
