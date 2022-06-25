@@ -10,6 +10,10 @@ class CommandController(val currentState: CurrentState) {
     private var usedIndex : Int = 0
     private var usedHashcode : Int = 0
 
+    fun commandHasFinished() : Boolean {
+        return currentState.actionHasFinished!!
+    }
+
 
     fun add(key: String, value: Int) {
         currentState.nextCommands = ArrayDeque<Command>()
@@ -52,9 +56,20 @@ class CommandController(val currentState: CurrentState) {
                 commandDeck.addLast(CheckFreeSlotCommand())
                 commandDeck.addLast(CheckIfKeysAreEqualCommand())
                 commandDeck.addLast(InsertEntriesCommand())
+                if (checkIfLoadFactorIsExeeded()) {
+                    commandDeck.addLast(ExtendAndRestructureCommand())
+                }
             }
         }
         currentState.nextCommands = commandDeck
+    }
+
+    private fun checkIfLoadFactorIsExeeded(): Boolean {
+        val entryCounter = currentState.keyList.count(predicate = {it != null})
+        if (entryCounter > currentState.loadFactor * currentState.mapSize) {
+            return true
+        }
+        return false
     }
 
     fun nextCommand() {

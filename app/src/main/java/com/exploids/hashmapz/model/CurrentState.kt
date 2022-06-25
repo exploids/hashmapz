@@ -10,6 +10,7 @@ data class CurrentState(
     var currentAction: Actions = NONE,
     var currentCommand: Command? = null,
     var mapSize: Int,
+    var loadFactor: Float = 0.75F,
     var usedValue: Int? = null,
     var usedKey: String? = null,
     var savedValue: Int? = null,
@@ -27,6 +28,9 @@ data class CurrentState(
     var keyList: LinkedList<String?>,
     var hashcodeList: LinkedList<Int?>,
     var valueList: LinkedList<Int?>,
+    var savedKeyList: LinkedList<String?>? = null,
+    var savedValueList: LinkedList<Int?>? = null,
+    var savedHashcodeList: LinkedList<Int?>? = null,
     var foundValue: Int? = null,
     var keyNotFound: Boolean? = null
 
