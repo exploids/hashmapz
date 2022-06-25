@@ -7,8 +7,8 @@ import java.util.*
 import kotlin.collections.ArrayDeque
 
 class CommandController(val currentState: CurrentState) {
-    var usedIndex : Int = 0
-    var usedHashcode : Int = 0
+    private var usedIndex : Int = 0
+    private var usedHashcode : Int = 0
 
 
     fun add(key: String, value: Int) {
@@ -25,7 +25,7 @@ class CommandController(val currentState: CurrentState) {
         nextCommand()
     }
 
-    fun calculateStepsAdd(commandDeck: ArrayDeque<Command>)  {
+    private fun calculateStepsAdd(commandDeck: ArrayDeque<Command>)  {
         val keyList : LinkedList<String?> = currentState.keyList
         val key : String? = currentState.usedKey
         var index : Int? = usedIndex
@@ -68,7 +68,7 @@ class CommandController(val currentState: CurrentState) {
     /**
      * Executes the next Command if it exist in the nextCommands Stack
      */
-    fun executeNextCommand() {
+    private fun executeNextCommand() {
         var nextCommand: Command
         var nextCommandsDeck: ArrayDeque<Command> = currentState.nextCommands!!
 
@@ -79,7 +79,7 @@ class CommandController(val currentState: CurrentState) {
     /**
      * Updates the ViewModel`s prevCommands, nextCommands and currentCommand
      */
-    fun updateNextCommand(){
+    private fun updateNextCommand(){
 
         var currentCommand: Command? = currentState.currentCommand
         currentState.nextCommands!!.removeFirst()
@@ -91,7 +91,7 @@ class CommandController(val currentState: CurrentState) {
 
     }
 
-    fun checkIfLastCommandWasExecuted() : Boolean {
+    private fun checkIfLastCommandWasExecuted() : Boolean {
         var nextCommandDeck: ArrayDeque<Command> = currentState.nextCommands!!
         if (nextCommandDeck.isEmpty()) {
             return true
@@ -100,7 +100,7 @@ class CommandController(val currentState: CurrentState) {
         return false
     }
 
-    fun sendActionHasFinished() {
+    private fun sendActionHasFinished() {
         currentState.actionHasFinished = true
     }
 
@@ -111,7 +111,7 @@ class CommandController(val currentState: CurrentState) {
         }
     }
 
-    fun executePrevCommand() {
+    private fun executePrevCommand() {
         var prevCommand: Command
         var prevCommandsStack: Stack<Command> = currentState.prevCommands!!
 
@@ -119,7 +119,7 @@ class CommandController(val currentState: CurrentState) {
         prevCommand.undoCommand(currentState)
     }
 
-    fun updatePrevCommand() {
+    private fun updatePrevCommand() {
         var currentCommand: Command? = currentState.currentCommand
         var prevCommand: Command? = currentState.prevCommands!!.pop()
         currentState.nextCommands!!.addLast(currentCommand!!)
@@ -137,7 +137,7 @@ class CommandController(val currentState: CurrentState) {
         nextCommand()
     }
 
-    fun calculateStepsSearch(commandDeck: ArrayDeque<Command>) {
+    private fun calculateStepsSearch(commandDeck: ArrayDeque<Command>) {
         val keyList : LinkedList<String?> = currentState.keyList
         val key : String? = currentState.usedKey
         var index : Int? = usedIndex
@@ -156,6 +156,51 @@ class CommandController(val currentState: CurrentState) {
                 commandDeck.addLast(CheckIfKeysAreEqualCommand())
                 if (keyList[index!!].equals(key)) {
                     commandDeck.addLast(ReturnValueCommand())
+                    break
+                }
+                commandDeck.addLast(GoToIndexInStepsCommand())
+                index = index?.plus(currentState.steps)
+                index = index?.mod(currentState.mapSize)
+            }
+            if (keyList[index!!] == null) {
+                commandDeck.addLast(CheckFreeSlotCommand())
+                commandDeck.addLast(CheckIfKeysAreEqualCommand())
+                commandDeck.addLast(KeyNotFoundCommand())
+            }
+        }
+        currentState.nextCommands = commandDeck
+    }
+
+    fun delete(key: String) {
+        currentState.nextCommands = ArrayDeque<Command>()
+        currentState.prevCommands = Stack<Command>()
+        currentState.usedKey = key
+        usedIndex = key.hashCode().mod(currentState.mapSize)
+
+        calculateStepsDelete(currentState.nextCommands!!)
+        currentState.currentCommand = currentState.nextCommands!!.first()
+        nextCommand()
+    }
+
+    private fun calculateStepsDelete(commandDeck: ArrayDeque<Command>) {
+        val keyList : LinkedList<String?> = currentState.keyList
+        val key : String? = currentState.usedKey
+        var index : Int? = usedIndex
+
+        if (keyList[index!!] == null) {
+            commandDeck.addLast(CalculateIndexCommand())
+            commandDeck.addLast(GoToIndexCommand())
+            commandDeck.addLast(CheckFreeSlotCommand())
+            commandDeck.addLast(KeyNotFoundCommand())
+        } else {
+            commandDeck.addLast(CalculateIndexCommand())
+            commandDeck.addLast(GoToIndexCommand())
+
+            while (keyList[index!!] != null) {
+                commandDeck.addLast(CheckFreeSlotCommand())
+                commandDeck.addLast(CheckIfKeysAreEqualCommand())
+                if (keyList[index!!].equals(key)) {
+                    commandDeck.addLast(DeleteEntryCommand())
                     break
                 }
                 commandDeck.addLast(GoToIndexInStepsCommand())

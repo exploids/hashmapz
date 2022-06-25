@@ -13,6 +13,8 @@ data class CurrentState(
     var usedValue: Int? = null,
     var usedKey: String? = null,
     var savedValue: Int? = null,
+    var savedKey: String? = null,
+    var savedHashcode: Int? = null,
     var usedHashcode: Int? = null,
     var usedIndex: Int? = null,
     var isSlotFree: Boolean? = null,
