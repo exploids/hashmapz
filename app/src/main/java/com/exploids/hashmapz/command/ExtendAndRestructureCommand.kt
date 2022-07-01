@@ -11,7 +11,7 @@ class ExtendAndRestructureCommand : Command {
         state.savedHashcodeList = LinkedList(state.hashcodeList)
         //Save Entries not null
         var keyEntries: ArrayList<String> = ArrayList<String>()
-        var valueEntries: ArrayList<Int> = ArrayList<Int>()
+        var valueEntries: ArrayList<String> = ArrayList<String>()
         var hashCodeEntries: ArrayList<Int> = ArrayList<Int>()
         for (index in 0..(state.mapSize-1)) {
             if (state.keyList[index] != null) {

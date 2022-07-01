@@ -15,7 +15,7 @@ class CommandController(val currentState: CurrentState) {
     }
 
 
-    fun add(key: String, value: Int) {
+    fun add(key: String, value: String) {
         currentState.nextCommands = ArrayDeque<Command>()
         currentState.prevCommands = Stack<Command>()
         currentState.usedKey = key
