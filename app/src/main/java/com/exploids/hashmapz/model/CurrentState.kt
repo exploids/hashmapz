@@ -11,9 +11,9 @@ data class CurrentState(
     var currentCommand: Command? = null,
     var mapSize: Int,
     var loadFactor: Float = 0.75F,
-    var usedValue: Int? = null,
+    var usedValue: String? = null,
     var usedKey: String? = null,
-    var savedValue: Int? = null,
+    var savedValue: String? = null,
     var savedKey: String? = null,
     var savedHashcode: Int? = null,
     var usedHashcode: Int? = null,
@@ -27,11 +27,11 @@ data class CurrentState(
     var actionHasFinished: Boolean? = null,
     var keyList: LinkedList<String?>,
     var hashcodeList: LinkedList<Int?>,
-    var valueList: LinkedList<Int?>,
+    var valueList: LinkedList<String?>,
     var savedKeyList: LinkedList<String?>? = null,
-    var savedValueList: LinkedList<Int?>? = null,
+    var savedValueList: LinkedList<String?>? = null,
     var savedHashcodeList: LinkedList<Int?>? = null,
-    var foundValue: Int? = null,
+    var foundValue: String? = null,
     var keyNotFound: Boolean? = null
 
     )
