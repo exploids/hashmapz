@@ -3,6 +3,7 @@ package com.exploids.hashmapz
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
@@ -20,8 +21,13 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.toSize
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -62,15 +68,23 @@ fun Home(navController: NavController) {
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden
     )
+    val (selectedBottomSheet, setSelectedBottomSheet) = remember {
+        mutableStateOf(0)
+    }
     ModalBottomSheetLayout(
         sheetState = sheetState,
         sheetContent = {
-            InsertBottomSheet()
+            when (selectedBottomSheet) {
+                0 -> InsertBottomSheet()
+                1 -> LookupBottomSheet()
+                2 -> RemoveBottomSheet()
+                3 -> RenewBottomSheet()
+            }
         }
     ) {
         Scaffold(
             bottomBar = {
-                HomeBottomBar(navController, scope, sheetState)
+                HomeBottomBar(navController, scope, sheetState, setSelectedBottomSheet)
             }
         ) {
             Column(
@@ -138,7 +152,8 @@ fun Home(navController: NavController) {
 fun HomeBottomBar(
     navController: NavController,
     scope: CoroutineScope,
-    sheetState: ModalBottomSheetState
+    sheetState: ModalBottomSheetState,
+    setSelectedBottomSheet: (Int) -> Unit
 ) {
     var showMenu by remember { mutableStateOf(false) }
     BottomAppBar(
@@ -149,21 +164,36 @@ fun HomeBottomBar(
                     contentDescription = "Localized description",
                 )
             }
-            IconButton(onClick = { /* doSomething() */ }) {
+            IconButton(onClick = {
+                setSelectedBottomSheet(2)
+                scope.launch {
+                    sheetState.show()
+                }
+            }) {
                 Icon(
                     Icons.Filled.Delete,
                     contentDescription = "Localized description",
                 )
             }
-            IconButton(onClick = { /* doSomething() */ }) {
+            IconButton(onClick = {
+                setSelectedBottomSheet(1)
+                scope.launch {
+                    sheetState.show()
+                }
+            }) {
                 Icon(
                     Icons.Filled.Search,
                     contentDescription = "Localized description",
                 )
             }
-            IconButton(onClick = { /* doSomething() */ }) {
+            IconButton(onClick = {
+                setSelectedBottomSheet(3)
+                scope.launch {
+                    sheetState.show()
+                }
+            }) {
                 Icon(
-                    Icons.Filled.Clear,
+                    Icons.Filled.Refresh,
                     contentDescription = "Localized description",
                 )
             }
@@ -185,6 +215,7 @@ fun HomeBottomBar(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
+                    setSelectedBottomSheet(0)
                     scope.launch {
                         sheetState.show()
                     }
@@ -217,15 +248,22 @@ fun BottomSheetContent(title: String, label: String, content: @Composable (() ->
 @Composable
 fun InsertBottomSheet() {
     BottomSheetContent(title = "Insert or update an entry", label = "Set") {
+        var key by remember { mutableStateOf("Banana") }
         TextField(
             modifier = Modifier.fillMaxWidth(),
-            value = "Banana",
-            onValueChange = {},
+            value = key,
+            onValueChange = { newText ->
+                key = newText
+            },
             label = { Text(text = "Key") })
+
+        var value by remember { mutableStateOf("32 pieces") }
         TextField(
             modifier = Modifier.fillMaxWidth(),
-            value = "32 pieces",
-            onValueChange = {},
+            value = value,
+            onValueChange = { newText ->
+                value = newText
+            },
             label = { Text(text = "Value") })
     }
 }
@@ -234,10 +272,13 @@ fun InsertBottomSheet() {
 @Composable
 fun LookupBottomSheet() {
     BottomSheetContent(title = "Lookup an entry", label = "Lookup") {
+        var key by remember { mutableStateOf("Banana") }
         TextField(
             modifier = Modifier.fillMaxWidth(),
-            value = "Banana",
-            onValueChange = {},
+            value = key,
+            onValueChange = { newText ->
+                key = newText
+            },
             label = { Text(text = "Key") })
     }
 }
@@ -246,11 +287,71 @@ fun LookupBottomSheet() {
 @Composable
 fun RemoveBottomSheet() {
     BottomSheetContent(title = "Remove an entry", label = "Remove") {
+        var key by remember { mutableStateOf("Banana") }
         TextField(
             modifier = Modifier.fillMaxWidth(),
-            value = "Banana",
-            onValueChange = {},
+            value = key,
+            onValueChange = { newText ->
+                key = newText
+            },
             label = { Text(text = "Key") })
+    }
+}
+
+@Preview
+@Composable
+fun RenewBottomSheet() {
+    BottomSheetContent(title = "Renew Hashmap", label = "Renew") {
+        var expanded by remember { mutableStateOf(false) }
+        val availableProbingModes = listOf("Linear Probing", "Quadratic Probing", "Double Hashing")
+        var selectedProbingMode by remember { mutableStateOf("") }
+        var textFieldSize by remember { mutableStateOf(Size.Zero)}
+
+        // Up Icon when expanded and down icon when collapsed
+        val icon = if (expanded)
+            Icons.Filled.KeyboardArrowUp
+        else
+            Icons.Filled.KeyboardArrowDown
+
+        TextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .onGloballyPositioned { coordinates ->
+                    textFieldSize = coordinates.size.toSize()
+                },
+            value = selectedProbingMode,
+            onValueChange = { selectedProbingMode = it},
+            label = { Text(text = "Probing Modes") },
+            trailingIcon = {
+                Icon(icon,"contentDescription",
+                    Modifier.clickable { expanded = !expanded })
+            },
+            readOnly = true
+        )
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier
+                .width(with(LocalDensity.current){textFieldSize.width.toDp()})
+        ) {
+            availableProbingModes.forEach { label ->
+                DropdownMenuItem(onClick = {
+                    selectedProbingMode = label
+                    expanded = false
+                }) {
+                    Text(text = label)
+                }
+            }
+        }
+        var loadfactor by remember { mutableStateOf("0.75") }
+        TextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = loadfactor,
+            onValueChange = { newText ->
+                loadfactor = newText
+            },
+            label = { Text(text = "Load factor") })
     }
 }
 
