@@ -1,10 +1,8 @@
 package com.exploids.hashmapz
 
-import com.exploids.hashmapz.command.Command
 import com.exploids.hashmapz.controller.CommandController
 import com.exploids.hashmapz.model.CurrentState
 import java.util.*
-import kotlin.collections.ArrayDeque
 
 fun main() {
     val keys = LinkedList<String?>()
@@ -35,7 +33,7 @@ fun main() {
     println(Arrays.toString(currentState.keyList.toArray()))
     println(Arrays.toString(currentState.valueList.toArray()))
     println(Arrays.toString(currentState.hashcodeList.toArray()))
-    commandController.nextCommand()
+    commandController.prevCommand()
     println(Arrays.toString(currentState.nextCommands!!.toArray()))
     println(Arrays.toString(currentState.prevCommands!!.toArray()))
     println(Arrays.toString(currentState.keyList.toArray()))
