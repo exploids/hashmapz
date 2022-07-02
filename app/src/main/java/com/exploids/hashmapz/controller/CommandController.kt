@@ -14,8 +14,17 @@ class CommandController(val currentState: CurrentState) {
         return currentState.actionHasFinished!!
     }
 
+    fun isNextStackEmpty() : Boolean {
+        return currentState.nextCommands.isEmpty()
+    }
+
+    fun isPrevStackEmpty() : Boolean {
+        return currentState.prevCommands.isEmpty()
+    }
+
 
     fun add(key: String, value: String) {
+        println("Add wurde aufgerufen")
         currentState.nextCommands = ArrayDeque<Command>()
         currentState.prevCommands = Stack<Command>()
         currentState.usedKey = key
@@ -25,7 +34,6 @@ class CommandController(val currentState: CurrentState) {
         currentState.actionHasFinished = false
         calculateStepsAdd(currentState.nextCommands!!)
         currentState.currentCommand = currentState.nextCommands!!.first()
-
         nextCommand()
     }
 
@@ -73,6 +81,7 @@ class CommandController(val currentState: CurrentState) {
     }
 
     fun nextCommand() {
+        println(currentState.nextCommands)
         executeNextCommand()
         updateNextCommand()
         if (checkIfLastCommandWasExecuted()) {
@@ -137,7 +146,7 @@ class CommandController(val currentState: CurrentState) {
     private fun updatePrevCommand() {
         var currentCommand: Command? = currentState.currentCommand
         var prevCommand: Command? = currentState.prevCommands!!.pop()
-        currentState.nextCommands!!.addLast(currentCommand!!)
+        currentState.nextCommands!!.addFirst(prevCommand!!)
         currentState.currentCommand = prevCommand
     }
 
@@ -230,5 +239,6 @@ class CommandController(val currentState: CurrentState) {
         }
         currentState.nextCommands = commandDeck
     }
+
 
 }

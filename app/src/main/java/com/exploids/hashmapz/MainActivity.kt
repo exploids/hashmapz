@@ -1,6 +1,7 @@
 package com.exploids.hashmapz
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
@@ -24,33 +25,38 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.exploids.hashmapz.command.Command
+import com.exploids.hashmapz.command.GoToIndexCommand
 import com.exploids.hashmapz.controller.CommandController
+import com.exploids.hashmapz.model.CurrenStateViewModel
 import com.exploids.hashmapz.model.CurrentState
 import com.exploids.hashmapz.ui.theme.HashmapzTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.util.*
+import kotlin.collections.ArrayDeque
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
-
-            val currentState = CurrentState(mapSize = 16, steps = 1, keyList = createStringList(), valueList = createStringList(), hashcodeList = createIntList() )
-            val commandController = CommandController(currentState)
+            val viewModel : CurrenStateViewModel = CurrenStateViewModel()
+            val commandController = viewModel.getCommandController()
             HashmapzTheme {
                 NavHost(navController = navController, startDestination = "home") {
                     composable("home") {
-                        Home(navController, commandController)
+                        Home(navController, commandController, viewModel)
                     }
                     composable("tutorial") {
                         Tutorial(navController)
@@ -69,7 +75,7 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun Home(navController: NavController, commandController: CommandController) {
+fun Home(navController: NavController, commandController: CommandController, currenStateViewModel:  CurrenStateViewModel = viewModel()) {
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden
@@ -81,10 +87,10 @@ fun Home(navController: NavController, commandController: CommandController) {
         sheetState = sheetState,
         sheetContent = {
             when (selectedBottomSheet) {
-                0 -> InsertBottomSheet(commandController)
-                1 -> LookupBottomSheet(commandController)
-                2 -> RemoveBottomSheet(commandController)
-                3 -> RenewBottomSheet(commandController)
+                0 -> InsertBottomSheet(currenStateViewModel, scope, sheetState)
+                1 -> LookupBottomSheet(currenStateViewModel, scope, sheetState)
+                2 -> RemoveBottomSheet(currenStateViewModel, scope, sheetState)
+                3 -> RenewBottomSheet(currenStateViewModel, scope, sheetState)
             }
         }
     ) {
@@ -111,10 +117,23 @@ fun Home(navController: NavController, commandController: CommandController) {
                             modifier = Modifier.align(Alignment.End),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Button(onClick = { commandController.prevCommand() }) {
+                            Button(
+                                onClick = {
+                                    commandController.prevCommand()
+                                    currenStateViewModel.update()
+                                          },
+                                enabled = !currenStateViewModel.isPrevDisabled
+
+                            ) {
                                 Text(text = "Back")
                             }
-                            Button(onClick = { commandController.nextCommand() }) {
+                            Button(
+                                onClick = {
+                                    commandController.nextCommand()
+                                    currenStateViewModel.update()
+                                          },
+                                enabled = !currenStateViewModel.isNextDisabled
+                                ) {
                                 Text(text = "Next")
                             }
                         }
@@ -234,8 +253,16 @@ fun HomeBottomBar(
     )
 }
 
+@ExperimentalMaterialApi
 @Composable
-fun BottomSheetContent(title: String, label: String, content: @Composable (() -> Unit), onClick: () -> Unit) {
+fun BottomSheetContent(
+    title: String,
+    label: String,
+    content: @Composable (() -> Unit),
+    currenStateViewModel:  CurrenStateViewModel = viewModel(),
+    scope: CoroutineScope,
+    sheetState: ModalBottomSheetState,
+) {
     Column(
         modifier = Modifier
             .padding(16.dp)
@@ -244,15 +271,23 @@ fun BottomSheetContent(title: String, label: String, content: @Composable (() ->
     ) {
         Text(text = title, style = MaterialTheme.typography.titleLarge)
         content()
-        Button(modifier = Modifier.align(Alignment.End), onClick = { onClick }) {
+        Button(modifier = Modifier.align(Alignment.End), onClick = { Log.d("Button","Clicked")
+            currenStateViewModel.getCommandController().add("Banana","Baked")
+            currenStateViewModel.update()
+            scope.launch {
+                sheetState.hide()
+            }
+
+        }) {
             Text(text = label)
         }
     }
 }
 
 
+@ExperimentalMaterialApi
 @Composable
-fun InsertBottomSheet(controller: CommandController) {
+fun InsertBottomSheet(currenStateViewModel:  CurrenStateViewModel = viewModel(), scope: CoroutineScope, sheetState: ModalBottomSheetState) {
     var key by remember { mutableStateOf("Banana") }
     var value by remember { mutableStateOf("32 pieces") }
     BottomSheetContent(title = "Insert or update an entry", label = "Set", {
@@ -274,14 +309,13 @@ fun InsertBottomSheet(controller: CommandController) {
                 },
                 label = { Text(text = "Value") })
 
-    }){
-        controller.add(key,value)
-    }
+    }, currenStateViewModel, scope, sheetState )
 }
 
 
+@ExperimentalMaterialApi
 @Composable
-fun LookupBottomSheet(controller: CommandController) {
+fun LookupBottomSheet(currenStateViewModel:  CurrenStateViewModel = viewModel(), scope: CoroutineScope, sheetState: ModalBottomSheetState) {
     var key by remember { mutableStateOf("Banana") }
     BottomSheetContent(title = "Lookup an entry", label = "Lookup", {
         TextField(
@@ -291,14 +325,13 @@ fun LookupBottomSheet(controller: CommandController) {
                 key = newText
             },
             label = { Text(text = "Key") })
-    }) {
-        controller.search(key)
-    }
+    }, currenStateViewModel, scope, sheetState)
 }
 
 
+@ExperimentalMaterialApi
 @Composable
-fun RemoveBottomSheet(controller: CommandController) {
+fun RemoveBottomSheet(currenStateViewModel:  CurrenStateViewModel = viewModel(), scope: CoroutineScope, sheetState: ModalBottomSheetState) {
     var key by remember { mutableStateOf("Banana") }
     BottomSheetContent(title = "Remove an entry", label = "Remove", {
         TextField(
@@ -308,14 +341,13 @@ fun RemoveBottomSheet(controller: CommandController) {
                 key = newText
             },
             label = { Text(text = "Key") })
-    }){
-        controller.search(key)
-    }
+    }, currenStateViewModel, scope, sheetState)
 }
 
 
+@ExperimentalMaterialApi
 @Composable
-fun RenewBottomSheet(controller: CommandController) {
+fun RenewBottomSheet(currenStateViewModel:  CurrenStateViewModel = viewModel(), scope: CoroutineScope, sheetState: ModalBottomSheetState) {
     var selectedProbingMode by remember { mutableStateOf("") }
     var loadfactor by remember { mutableStateOf("0.75") }
     BottomSheetContent(title = "Renew Hashmap", label = "Renew", {
@@ -368,9 +400,7 @@ fun RenewBottomSheet(controller: CommandController) {
                 loadfactor = newText
             },
             label = { Text(text = "Load factor") })
-    }){
-
-    }
+    }, currenStateViewModel, scope, sheetState)
 
 }
 
@@ -390,8 +420,18 @@ fun createIntList(): LinkedList<Int?>{
 @Composable
 fun DefaultPreview() {
     HashmapzTheme {
-        val currentState = CurrentState(mapSize = 16, steps = 1, keyList = createStringList(), valueList = createStringList(), hashcodeList = createIntList() )
-        val commandController = CommandController(currentState)
-        Home(rememberNavController(), commandController)
+        val currentState by remember {
+            mutableStateOf(CurrentState(
+                mapSize = 16,
+                steps = 1,
+                keyList = createStringList(),
+                valueList = createStringList(),
+                hashcodeList = createIntList()
+            ))
+        }
+
+        val viewModel : CurrenStateViewModel = CurrenStateViewModel()
+        val commandController = viewModel.getCommandController()
+        Home(rememberNavController(), commandController, viewModel )
     }
 }
