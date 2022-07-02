@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ExposedDropdownMenuBox
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
@@ -22,7 +24,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.BottomAppBar
@@ -32,6 +37,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -288,6 +294,7 @@ fun BottomSheetContent(
     currenStateViewModel:  CurrenStateViewModel = viewModel(),
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState,
+    onClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -297,14 +304,7 @@ fun BottomSheetContent(
     ) {
         Text(text = title, style = MaterialTheme.typography.titleLarge)
         content()
-        Button(modifier = Modifier.align(Alignment.End), onClick = { Log.d("Button","Clicked")
-            currenStateViewModel.getCommandController().add("Banana","Baked")
-            currenStateViewModel.update()
-            scope.launch {
-                sheetState.hide()
-            }
-
-        }) {
+        Button(modifier = Modifier.align(Alignment.End), onClick = onClick) {
             Text(text = label)
         }
     }
@@ -335,7 +335,13 @@ fun InsertBottomSheet(currenStateViewModel:  CurrenStateViewModel = viewModel(),
                 },
                 label = { Text(text = "Value") })
 
-    }, currenStateViewModel, scope, sheetState )
+    }, currenStateViewModel, scope, sheetState ){
+        currenStateViewModel.getCommandController().add(key, value)
+        currenStateViewModel.update()
+        scope.launch {
+            sheetState.hide()
+        }
+    }
 }
 
 
@@ -351,7 +357,13 @@ fun LookupBottomSheet(currenStateViewModel:  CurrenStateViewModel = viewModel(),
                 key = newText
             },
             label = { Text(text = "Key") })
-    }, currenStateViewModel, scope, sheetState)
+    }, currenStateViewModel, scope, sheetState){
+        currenStateViewModel.getCommandController().search(key)
+        currenStateViewModel.update()
+        scope.launch {
+            sheetState.hide()
+        }
+    }
 }
 
 
@@ -367,10 +379,17 @@ fun RemoveBottomSheet(currenStateViewModel:  CurrenStateViewModel = viewModel(),
                 key = newText
             },
             label = { Text(text = "Key") })
-    }, currenStateViewModel, scope, sheetState)
+    }, currenStateViewModel, scope, sheetState){
+        currenStateViewModel.getCommandController().delete(key)
+        currenStateViewModel.update()
+        scope.launch {
+            sheetState.hide()
+        }
+    }
 }
 
 
+@ExperimentalMaterial3Api
 @ExperimentalMaterialApi
 @Composable
 fun RenewBottomSheet(currenStateViewModel:  CurrenStateViewModel = viewModel(), scope: CoroutineScope, sheetState: ModalBottomSheetState) {
@@ -380,43 +399,36 @@ fun RenewBottomSheet(currenStateViewModel:  CurrenStateViewModel = viewModel(), 
         var expanded by remember { mutableStateOf(false) }
         val availableProbingModes = listOf("Linear Probing", "Quadratic Probing", "Double Hashing")
         var textFieldSize by remember { mutableStateOf(Size.Zero)}
-
-        // Up Icon when expanded and down icon when collapsed
-        val icon = if (expanded)
-            Icons.Filled.KeyboardArrowUp
-        else
-            Icons.Filled.KeyboardArrowDown
-
-        TextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .onGloballyPositioned { coordinates ->
-                    textFieldSize = coordinates.size.toSize()
-                },
-            value = selectedProbingMode,
-            onValueChange = { selectedProbingMode = it},
-            label = { Text(text = "Probing Modes") },
-            trailingIcon = {
-                Icon(icon,"contentDescription",
-                    Modifier.clickable { expanded = !expanded })
-            },
-            readOnly = true
-        )
-
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier
-                .width(with(LocalDensity.current){textFieldSize.width.toDp()})
+        
+        ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = {expanded = !expanded},
         ) {
-            availableProbingModes.forEach { label ->
-                DropdownMenuItem(onClick = {
-                    selectedProbingMode = label
-                    expanded = false
-                }) {
-                    Text(text = label)
+            TextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .onGloballyPositioned { coordinates ->
+                        textFieldSize = coordinates.size.toSize()
+                    },
+                value = selectedProbingMode,
+                onValueChange = { selectedProbingMode = it},
+                label = { Text(text = "Probing Modes") },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                },
+                readOnly = true
+            )
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false}) {
+                availableProbingModes.forEach { selectionOption ->
+                    DropdownMenuItem(text = { Text(text = selectionOption) },
+                        onClick = {
+                            selectedProbingMode = selectionOption
+                            expanded = false
+                        })
+
                 }
             }
+
         }
 
         TextField(
@@ -426,7 +438,9 @@ fun RenewBottomSheet(currenStateViewModel:  CurrenStateViewModel = viewModel(), 
                 loadfactor = newText
             },
             label = { Text(text = "Load factor") })
-    }, currenStateViewModel, scope, sheetState)
+    }, currenStateViewModel, scope, sheetState){
+
+        }
 
 }
 
