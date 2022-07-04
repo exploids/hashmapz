@@ -1,4 +1,12 @@
 <resources>
     <string name="app_name">hashmapz</string>
     <string name="title_activity_tutorial">TutorialActivity</string>
+    <string name="calculate_index_description">The Key gets hashed and the index is calculated:</string>
+    <string name="go_to_index">Now we move to the calculated index</string>
+    <string name="insert_entries">The entry is successfully inserted</string>
+    <string name="check_free_slot_case1">The slot is free.</string>
+    <string name="check_free_slot_case2">The slot is not free. </string>
+    <string name="check_equal_case1">The slot is equal. </string>
+    <string name="check_equal_case2">The slot is not equal. </string>
+
 </resources>
