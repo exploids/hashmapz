@@ -2,6 +2,8 @@ package com.exploids.hashmapz.controller
 
 import androidx.compose.runtime.currentRecomposeScope
 import com.exploids.hashmapz.command.*
+import com.exploids.hashmapz.createIntList
+import com.exploids.hashmapz.createStringList
 import com.exploids.hashmapz.model.CurrentState
 import java.util.*
 import kotlin.collections.ArrayDeque
@@ -14,15 +16,13 @@ class CommandController(val currentState: CurrentState) {
         return currentState.actionHasFinished!!
     }
 
-    fun isNextStackEmpty() : Boolean {
-        return currentState.nextCommands.isEmpty()
+    fun renewMap (probingMode: String,loadFactor: Float) {
+        currentState.keyList = createStringList()
+        currentState.valueList = createStringList()
+        currentState.hashcodeList = createIntList()
+        currentState.probingMode = probingMode
+        currentState.loadFactor = loadFactor
     }
-
-    fun isPrevStackEmpty() : Boolean {
-        return currentState.prevCommands.isEmpty()
-    }
-
-
     fun add(key: String, value: String) {
         println("Add wurde aufgerufen")
         currentState.nextCommands = ArrayDeque<Command>()
@@ -41,6 +41,7 @@ class CommandController(val currentState: CurrentState) {
         val keyList : LinkedList<String?> = currentState.keyList
         val key : String? = currentState.usedKey
         var index : Int? = usedIndex
+        var steps : Int = 1
         if ( index?.let { keyList.get(it) } == null ) {
             commandDeck.addLast(CalculateIndexCommand())
             commandDeck.addLast(GoToIndexCommand())
@@ -57,8 +58,14 @@ class CommandController(val currentState: CurrentState) {
                     break
                 }
                 commandDeck.addLast(GoToIndexInStepsCommand())
-                index = index?.plus(currentState.steps)
-                index = index?.mod(currentState.mapSize)
+                if(currentState.probingMode.equals("Linear Probing")) {
+                    index = index?.plus(steps)
+                    index = index?.mod(currentState.mapSize)
+                } else if (currentState.probingMode.equals("Quadratic Probing")) {
+                    index = index?.plus(steps)
+                    index = index?.mod(currentState.mapSize)
+                    steps *= steps
+                }
             }
             if (index?.let { keyList.get(it).equals(null) } == true) {
                 commandDeck.addLast(CheckFreeSlotCommand())

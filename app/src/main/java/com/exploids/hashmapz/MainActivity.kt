@@ -57,9 +57,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
+import androidx.core.content.res.TypedArrayUtils.getResourceId
+import androidx.core.content.res.TypedArrayUtils.getString
+import androidx.core.content.res.TypedArrayUtils.getText
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -144,7 +148,7 @@ fun Home(navController: NavController, commandController: CommandController, cur
                             .padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        Text("Checking whether the current index is empty.")
+                        Text(stringResource(id = currenStateViewModel.currentDescription))
                         Row(
                             modifier = Modifier.align(Alignment.End),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -439,6 +443,12 @@ fun RenewBottomSheet(currenStateViewModel:  CurrenStateViewModel = viewModel(), 
             },
             label = { Text(text = "Load factor") })
     }, currenStateViewModel, scope, sheetState){
+        println(loadfactor.toFloat())
+        currenStateViewModel.getCommandController().renewMap(selectedProbingMode, loadfactor.toFloat())
+        currenStateViewModel.update()
+        scope.launch {
+            sheetState.hide()
+        }
 
         }
 

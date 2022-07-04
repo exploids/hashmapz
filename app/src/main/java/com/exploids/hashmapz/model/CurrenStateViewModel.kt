@@ -26,9 +26,28 @@ class CurrenStateViewModel() : ViewModel() {
 
     var isNextDisabled by mutableStateOf(state.nextCommands.isEmpty())
 
+    var listKey by mutableStateOf(state.keyList)
+
+    var valueList by mutableStateOf(state.valueList)
+
+    var hashList by mutableStateOf(state.hashcodeList)
+
+    var currentIndex by mutableStateOf(state.currentIndex)
+
+    var currentDescription by mutableStateOf(state.currentDescription)
+
+
+
+
+
     fun update() {
         isPrevDisabled = state.prevCommands.isEmpty()
         isNextDisabled = state.nextCommands.isEmpty()
+        listKey = LinkedList(state.keyList)
+        valueList = LinkedList(state.valueList)
+        hashList = LinkedList(state.hashcodeList)
+        currentIndex = state.currentIndex
+        currentDescription = state.currentDescription
     }
 
 

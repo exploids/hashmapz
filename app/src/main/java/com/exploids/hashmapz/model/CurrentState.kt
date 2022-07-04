@@ -2,6 +2,7 @@ package com.exploids.hashmapz.model
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import com.exploids.hashmapz.R
 import com.exploids.hashmapz.command.Command
 import com.exploids.hashmapz.model.Actions.NONE
 import java.util.*
@@ -23,7 +24,8 @@ data class CurrentState(
     var isSlotFree: Boolean? = null,
     var isKeyEqual: Boolean? = null,
     var steps: Int,
-    var currentDescription: String? = null,
+    var currentDescription: Int = R.string.app_name,
+    var prevDescription: Int? = null,
     var prevCommands: Stack<Command> = Stack(),
     var nextCommands: ArrayDeque<Command> = ArrayDeque(),
     var actionHasFinished: Boolean? = null,
@@ -34,6 +36,7 @@ data class CurrentState(
     var savedValueList: LinkedList<String?>? = null,
     var savedHashcodeList: LinkedList<Int?>? = null,
     var foundValue: String? = null,
-    var keyNotFound: Boolean? = null
+    var keyNotFound: Boolean? = null,
+    var probingMode: String = "Linear Probing"
 
     )
