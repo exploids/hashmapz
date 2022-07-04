@@ -7,7 +7,7 @@ import java.util.*
 class CheckIfKeysAreEqualCommand : Command {
     override fun doCommand(state: CurrentState) {
         val keyList: LinkedList<String?> = state.keyList
-        state.prevDescription = state.currentDescription
+        state.prevDescription.add(state.currentDescription)
         if (state.currentIndex?.let { keyList.get(it).equals(state.usedKey) } == true) {
                 state.isKeyEqual = true
                 state.currentDescription = R.string.check_equal_case1
@@ -19,6 +19,6 @@ class CheckIfKeysAreEqualCommand : Command {
 
     override fun undoCommand(state: CurrentState) {
         state.isKeyEqual = null
-        state.currentDescription = state.prevDescription!!
+        state.currentDescription = state.prevDescription.pop()
     }
 }

@@ -8,7 +8,7 @@ class InsertEntriesCommand : Command {
         state.keyList[state.currentIndex!!] = state.usedKey
         state.valueList[state.currentIndex!!] = state.usedValue
         state.hashcodeList[state.currentIndex!!] = state.usedHashcode
-        state.prevDescription = state.currentDescription
+        state.prevDescription.add(state.currentDescription)
         state.currentDescription = R.string.insert_entries
     }
 
@@ -16,7 +16,7 @@ class InsertEntriesCommand : Command {
         state.keyList[state.currentIndex!!] = null
         state.valueList[state.currentIndex!!] = null
         state.hashcodeList[state.currentIndex!!] = null
-        state.currentDescription = state.prevDescription!!
+        state.currentDescription = state.prevDescription.pop()
     }
 
 }
