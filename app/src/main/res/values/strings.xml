@@ -7,6 +7,7 @@
     <string name="check_free_slot_case1">The slot is free.</string>
     <string name="check_free_slot_case2">The slot is not free. </string>
     <string name="check_equal_case1">The slot is equal. </string>
+    <string name="key_not_found">Key not found</string>
     <string name="check_equal_case2">The slot is not equal. </string>
-
+    <string name="go_to_index_in_steps">We move in steps to next index</string>
 </resources>

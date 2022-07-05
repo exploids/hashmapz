@@ -5,6 +5,7 @@ import com.exploids.hashmapz.model.CurrentState
 import java.util.*
 
 fun main() {
+    /*
     val keys = LinkedList<String?>()
     keys.addAll(listOf(null, null, null, null, null,null,null,null,null,null,null,null,null,null,null,null))
     val valueList = LinkedList<String?>()
@@ -12,7 +13,7 @@ fun main() {
     val hashList = LinkedList<Int?>()
     hashList.addAll(listOf(null, null, null, null, null,null,null,null,null,null,null,null,null,null,null,null))
     val currentState: CurrentState = CurrentState(mapSize = 16, steps =  1, keyList = keys, hashcodeList = hashList, valueList = valueList)
-    val commandController: CommandController = CommandController(currentState)
+    val commandController: CommandController = CommandController(currentState, this)
     val names = listOf<String>("Peter","Anna","Bob","Hannah","James","Nina","Horst","Luisa","Dieter","Laura","Eliot","Ida","Norbert","Greta")
     val id = listOf<String>("313","244","543","544","312","265","238","612","256","2341","547","111","444","123")
     for (n in 0..(names.size-1)) {
@@ -90,5 +91,5 @@ fun main() {
     println(Arrays.toString(currentState.valueList.toArray()))
     println(Arrays.toString(currentState.hashcodeList.toArray()))
     */
-
+*/
 }

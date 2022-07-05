@@ -37,5 +37,6 @@ data class CurrentState(
     var foundValue: String? = null,
     var keyNotFound: Boolean? = null,
     var probingMode: String = "Linear Probing",
-    var prevDescription: Stack<Int> = Stack()
+    var prevDescription: Stack<Int> = Stack(),
+    var collisionCounter: Double = 1.0
     )
