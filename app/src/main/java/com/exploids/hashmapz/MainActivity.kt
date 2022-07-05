@@ -3,6 +3,7 @@ package com.exploids.hashmapz
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,6 +17,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ExposedDropdownMenuBox
 import androidx.compose.material.ModalBottomSheetLayout
@@ -51,6 +55,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -74,6 +80,7 @@ import kotlinx.coroutines.launch
 import java.util.*
 
 
+@ExperimentalFoundationApi
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -101,6 +108,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@ExperimentalFoundationApi
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun Home(navController: NavController, commandController: CommandController, currentStateViewModel:  CurrentStateViewModel = viewModel()) {
@@ -108,6 +116,9 @@ fun Home(navController: NavController, commandController: CommandController, cur
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden
     )
+    val bringIntoViewRequester = remember {
+        BringIntoViewRequester()
+    }
     val (selectedBottomSheet, setSelectedBottomSheet) = remember {
         mutableStateOf(0)
     }
@@ -167,10 +178,15 @@ fun Home(navController: NavController, commandController: CommandController, cur
                         }
                     }
                 }
+                val listState = rememberLazyListState()
                 LazyColumn(
+                    state = listState,
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     contentPadding = PaddingValues(0.dp, 0.dp, 0.dp, 16.dp)
                 ) {
+                    if (currentStateViewModel.currentIndex != null){
+                        scope.launch { listState.scrollToItem(currentStateViewModel.currentIndex!!, 0) }
+                    }
                     items(currentStateViewModel.mapSize) { index ->
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             Row(
@@ -193,6 +209,7 @@ fun Home(navController: NavController, commandController: CommandController, cur
                                         Modifier
                                             .height(80.dp)
                                             .fillMaxWidth()
+
                                     )
                                 }*/
                                 HashEntry1(index = index, currentStateViewModel)
@@ -617,6 +634,7 @@ fun createIntList(): LinkedList<Int?>{
     return list
 }
 
+@ExperimentalFoundationApi
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
