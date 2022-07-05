@@ -3,15 +3,15 @@
     <string name="title_activity_tutorial">TutorialActivity</string>
     <string name="explanation_getting_started">Get started by inserting an entry.</string>
     <string name="calculate_index_description">The key gets hashed and the index is calculated:\nhash(%1$s) = %2$s\n%2$s mod %3$s = %4$s</string>
-    <string name="go_to_index">Now we move to the calculated index</string>
-    <string name="insert_entries">The entry is successfully inserted</string>
-    <string name="check_free_slot_case1">The slot is not occupied</string>
-    <string name="check_free_slot_case2">The slot is occupied</string>
-    <string name="check_equal_case1">The key is equal to your entry\'s key</string>
-    <string name="return_value">This is the entry you were looking for</string>
-    <string name="update_value">The value has been updated</string>
-    <string name="delete_entry">The entry has been deleted</string>
-    <string name="key_not_found">The entry you searched for was not found</string>
-    <string name="check_equal_case2">The key is not the same as your entry\'s key</string>
-    <string name="go_to_index_in_steps">We move %1$ steps forward to the next index</string>
+    <string name="go_to_index">Now we move to the calculated index \nand check if it is empty</string>
+    <string name="insert_entries">The entry is successfully inserted.</string>
+    <string name="check_free_slot_case1">The slot is not occupied.</string>
+    <string name="check_free_slot_case2">The slot is occupied. \nAre the keys equal?</string>
+    <string name="check_equal_case1">The key is the same as your entry\'s key.</string>
+    <string name="return_value">This is the entry you were looking for.</string>
+    <string name="update_value">The value has been updated.</string>
+    <string name="delete_entry">The entry has been deleted.</string>
+    <string name="key_not_found">The entry you searched for was not found.</string>
+    <string name="check_equal_case2">The key is not the same as your entry\'s key.</string>
+    <string name="go_to_index_in_steps">We move %5$s step(s) forward to the next index.</string>
 </resources>
