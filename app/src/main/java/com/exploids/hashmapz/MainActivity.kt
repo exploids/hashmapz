@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -23,7 +24,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.relocation.BringIntoViewRequester
-import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ExposedDropdownMenuBox
 import androidx.compose.material.ModalBottomSheetLayout
@@ -60,8 +60,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -77,9 +75,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.exploids.hashmapz.controller.CommandController
-import com.exploids.hashmapz.model.CurrentStateViewModel
 import com.exploids.hashmapz.model.CurrentState
+import com.exploids.hashmapz.model.CurrentStateViewModel
 import com.exploids.hashmapz.ui.theme.HashmapzTheme
+import com.exploids.hashmapz.ui.theme.Typography
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.util.*
@@ -91,7 +90,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
-            val viewModel : CurrentStateViewModel = CurrentStateViewModel()
+            val viewModel: CurrentStateViewModel = CurrentStateViewModel()
             val commandController = viewModel.getCommandController()
             HashmapzTheme {
                 NavHost(navController = navController, startDestination = "home") {
@@ -116,7 +115,11 @@ class MainActivity : ComponentActivity() {
 @ExperimentalFoundationApi
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun Home(navController: NavController, commandController: CommandController, currentStateViewModel:  CurrentStateViewModel = viewModel()) {
+fun Home(
+    navController: NavController,
+    commandController: CommandController,
+    currentStateViewModel: CurrentStateViewModel = viewModel()
+) {
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden
@@ -169,7 +172,7 @@ fun Home(navController: NavController, commandController: CommandController, cur
                                 onClick = {
                                     commandController.prevCommand()
                                     currentStateViewModel.update()
-                                          },
+                                },
                                 enabled = !currentStateViewModel.isPrevDisabled
 
                             ) {
@@ -179,9 +182,9 @@ fun Home(navController: NavController, commandController: CommandController, cur
                                 onClick = {
                                     commandController.nextCommand()
                                     currentStateViewModel.update()
-                                          },
+                                },
                                 enabled = !currentStateViewModel.isNextDisabled
-                                ) {
+                            ) {
                                 Text(text = "Next")
                             }
                         }
@@ -193,7 +196,7 @@ fun Home(navController: NavController, commandController: CommandController, cur
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     contentPadding = PaddingValues(0.dp, 0.dp, 0.dp, 16.dp)
                 ) {
-                    if (currentStateViewModel.currentIndex != null){
+                    if (currentStateViewModel.currentIndex != null) {
                         scope.launch {
                             listState.animateScrollToItem(currentStateViewModel.currentIndex!!, 0)
                         }
@@ -207,7 +210,8 @@ fun Home(navController: NavController, commandController: CommandController, cur
                                 horizontalArrangement = Arrangement.Start,
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
-                                val color = if (currentStateViewModel.currentIndex != null && currentStateViewModel.currentIndex == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                val color =
+                                    if (currentStateViewModel.currentIndex != null && currentStateViewModel.currentIndex == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                                 Text(
                                     text = index.toString(),
                                     style = MaterialTheme.typography.headlineSmall,
@@ -224,7 +228,11 @@ fun Home(navController: NavController, commandController: CommandController, cur
                                     )
                                 }
                             } else {
-                                HashEntry1(index = index, currentStateViewModel)
+                                HashEntry1(
+                                    currentStateViewModel.listKey[index].toString(),
+                                    currentStateViewModel.hashList[index].toString(),
+                                    currentStateViewModel.valueList[index].toString()
+                                )
                             }
                         }
                     }
@@ -321,7 +329,7 @@ fun BottomSheetContent(
     title: String,
     label: String,
     content: @Composable (() -> Unit),
-    currentStateViewModel:  CurrentStateViewModel = viewModel(),
+    currentStateViewModel: CurrentStateViewModel = viewModel(),
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState,
     onClick: () -> Unit
@@ -345,29 +353,33 @@ fun BottomSheetContent(
 
 @ExperimentalMaterialApi
 @Composable
-fun InsertBottomSheet(currentStateViewModel:  CurrentStateViewModel = viewModel(), scope: CoroutineScope, sheetState: ModalBottomSheetState) {
+fun InsertBottomSheet(
+    currentStateViewModel: CurrentStateViewModel = viewModel(),
+    scope: CoroutineScope,
+    sheetState: ModalBottomSheetState
+) {
     var key by remember { mutableStateOf("Banana") }
     var value by remember { mutableStateOf("32 pieces") }
     BottomSheetContent(title = "Insert or update an entry", label = "Set", {
 
 
-            TextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = key,
-                onValueChange = { newText ->
-                    key = newText
-                },
-                label = { Text(text = "Key") })
+        TextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = key,
+            onValueChange = { newText ->
+                key = newText
+            },
+            label = { Text(text = "Key") })
 
-            TextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = value,
-                onValueChange = { newText ->
-                    value = newText
-                },
-                label = { Text(text = "Value") })
+        TextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = value,
+            onValueChange = { newText ->
+                value = newText
+            },
+            label = { Text(text = "Value") })
 
-    }, currentStateViewModel, scope, sheetState ){
+    }, currentStateViewModel, scope, sheetState) {
         currentStateViewModel.getCommandController().add(key, value)
         currentStateViewModel.update()
         scope.launch {
@@ -379,7 +391,11 @@ fun InsertBottomSheet(currentStateViewModel:  CurrentStateViewModel = viewModel(
 
 @ExperimentalMaterialApi
 @Composable
-fun LookupBottomSheet(currentStateViewModel:  CurrentStateViewModel = viewModel(), scope: CoroutineScope, sheetState: ModalBottomSheetState) {
+fun LookupBottomSheet(
+    currentStateViewModel: CurrentStateViewModel = viewModel(),
+    scope: CoroutineScope,
+    sheetState: ModalBottomSheetState
+) {
     var key by remember { mutableStateOf("Banana") }
     BottomSheetContent(title = "Lookup an entry", label = "Lookup", {
         TextField(
@@ -389,7 +405,7 @@ fun LookupBottomSheet(currentStateViewModel:  CurrentStateViewModel = viewModel(
                 key = newText
             },
             label = { Text(text = "Key") })
-    }, currentStateViewModel, scope, sheetState){
+    }, currentStateViewModel, scope, sheetState) {
         currentStateViewModel.getCommandController().search(key)
         currentStateViewModel.update()
         scope.launch {
@@ -401,7 +417,11 @@ fun LookupBottomSheet(currentStateViewModel:  CurrentStateViewModel = viewModel(
 
 @ExperimentalMaterialApi
 @Composable
-fun RemoveBottomSheet(currentStateViewModel:  CurrentStateViewModel = viewModel(), scope: CoroutineScope, sheetState: ModalBottomSheetState) {
+fun RemoveBottomSheet(
+    currentStateViewModel: CurrentStateViewModel = viewModel(),
+    scope: CoroutineScope,
+    sheetState: ModalBottomSheetState
+) {
     var key by remember { mutableStateOf("Banana") }
     BottomSheetContent(title = "Remove an entry", label = "Remove", {
         TextField(
@@ -411,7 +431,7 @@ fun RemoveBottomSheet(currentStateViewModel:  CurrentStateViewModel = viewModel(
                 key = newText
             },
             label = { Text(text = "Key") })
-    }, currentStateViewModel, scope, sheetState){
+    }, currentStateViewModel, scope, sheetState) {
         currentStateViewModel.getCommandController().delete(key)
         currentStateViewModel.update()
         scope.launch {
@@ -424,15 +444,20 @@ fun RemoveBottomSheet(currentStateViewModel:  CurrentStateViewModel = viewModel(
 @ExperimentalMaterial3Api
 @ExperimentalMaterialApi
 @Composable
-fun RenewBottomSheet(currentStateViewModel:  CurrentStateViewModel = viewModel(), scope: CoroutineScope, sheetState: ModalBottomSheetState) {
+fun RenewBottomSheet(
+    currentStateViewModel: CurrentStateViewModel = viewModel(),
+    scope: CoroutineScope,
+    sheetState: ModalBottomSheetState
+) {
     var selectedProbingMode by remember { mutableStateOf("") }
     var loadfactor by remember { mutableStateOf("0.75") }
     BottomSheetContent(title = "Renew Hashmap", label = "Renew", {
         var expanded by remember { mutableStateOf(false) }
         val availableProbingModes = listOf("Linear Probing", "Quadratic Probing", "Double Hashing")
-        var textFieldSize by remember { mutableStateOf(Size.Zero)}
-        
-        ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = {expanded = !expanded},
+        var textFieldSize by remember { mutableStateOf(Size.Zero) }
+
+        ExposedDropdownMenuBox(
+            expanded = expanded, onExpandedChange = { expanded = !expanded },
         ) {
             TextField(
                 modifier = Modifier
@@ -441,7 +466,7 @@ fun RenewBottomSheet(currentStateViewModel:  CurrentStateViewModel = viewModel()
                         textFieldSize = coordinates.size.toSize()
                     },
                 value = selectedProbingMode,
-                onValueChange = { selectedProbingMode = it},
+                onValueChange = { selectedProbingMode = it },
                 label = { Text(text = "Probing Modes") },
                 trailingIcon = {
                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
@@ -450,7 +475,7 @@ fun RenewBottomSheet(currentStateViewModel:  CurrentStateViewModel = viewModel()
             )
             ExposedDropdownMenu(
                 expanded = expanded,
-                onDismissRequest = { expanded = false}) {
+                onDismissRequest = { expanded = false }) {
                 availableProbingModes.forEach { selectionOption ->
                     DropdownMenuItem(text = { Text(text = selectionOption) },
                         onClick = {
@@ -470,15 +495,16 @@ fun RenewBottomSheet(currentStateViewModel:  CurrentStateViewModel = viewModel()
                 loadfactor = newText
             },
             label = { Text(text = "Load factor") })
-    }, currentStateViewModel, scope, sheetState){
+    }, currentStateViewModel, scope, sheetState) {
         println(loadfactor.toFloat())
-        currentStateViewModel.getCommandController().renewMap(selectedProbingMode, loadfactor.toFloat())
+        currentStateViewModel.getCommandController()
+            .renewMap(selectedProbingMode, loadfactor.toFloat())
         currentStateViewModel.update()
         scope.launch {
             sheetState.hide()
         }
 
-        }
+    }
 
 }
 
@@ -489,7 +515,7 @@ fun RenewBottomSheet(currentStateViewModel:  CurrentStateViewModel = viewModel()
 
 @Composable
 @Preview
-fun HashEntry(index: Int, currentStateViewModel: CurrentStateViewModel = viewModel() ) {
+fun HashEntry(index: Int = 0, currentStateViewModel: CurrentStateViewModel = viewModel()) {
     Row(
         modifier = Modifier
             .padding(all = 4.dp)
@@ -550,9 +576,10 @@ fun HashEntry(index: Int, currentStateViewModel: CurrentStateViewModel = viewMod
 
         } // End Column
     } // End Row
-    Row(modifier = Modifier
-        .padding(2.dp)
-        .fillMaxWidth(),
+    Row(
+        modifier = Modifier
+            .padding(2.dp)
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.End,
     ) {
         Box(
@@ -584,7 +611,9 @@ fun HashEntry(index: Int, currentStateViewModel: CurrentStateViewModel = viewMod
                     modifier = Modifier.height(7.dp)
                 )
                 androidx.compose.material.Text(
-                    currentStateViewModel.valueList[index].toString(), fontSize = 15.sp, modifier = Modifier.width(150.dp),
+                    currentStateViewModel.valueList[index].toString(),
+                    fontSize = 15.sp,
+                    modifier = Modifier.width(150.dp),
                     color = Color(
                         133,
                         133,
@@ -601,35 +630,38 @@ fun HashEntry(index: Int, currentStateViewModel: CurrentStateViewModel = viewMod
 @ExperimentalMaterial3Api
 @Composable
 @Preview
-fun HashEntry1(index: Int, currentStateViewModel: CurrentStateViewModel = viewModel()) {
+fun HashEntry1(
+    key: String = "Banana",
+    hashCode: String = "123456789",
+    value: String = "32 pieces"
+) {
     Card(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .height(IntrinsicSize.Min)
+            .fillMaxWidth()
     ) {
         Row() {
             Column(
                 modifier = Modifier
-                    .padding(10.dp)
-                    .weight(1f)
+                    .weight(0.5f)
+                    .padding(12.dp),
             ) {
-                Text(text = "Key", fontSize = 13.sp, color = Color(133,133,133,255))
-                Text(text = currentStateViewModel.listKey[index].toString())
-                Text(text = "HashCode", fontSize = 13.sp, color = Color(133,133,133,255))
-                Text(text = currentStateViewModel.hashList[index].toString())
+                Text(text = "Key", style = Typography.labelSmall)
+                Text(text = key)
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = "Hash code", style = Typography.labelSmall)
+                Text(text = hashCode)
             }
-            Row(
-                Modifier.background(color = MaterialTheme.colorScheme.primaryContainer),
-                horizontalArrangement = Arrangement.End
+            Box(
+                modifier = Modifier
+                    .weight(0.5f)
+                    .fillMaxHeight()
+                    .background(color = MaterialTheme.colorScheme.primaryContainer)
+                    .padding(12.dp)
             ) {
-                Column(
-                    modifier = Modifier
-                        .width(100.dp)
-                        .height(IntrinsicSize.Max),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(text = "Value", fontSize = 15.sp, color = Color(133,133,133,255))
-                    Text(text = currentStateViewModel.valueList[index].toString())
-
+                Column {
+                    Text(text = "Value", style = Typography.labelSmall)
+                    Text(text = value)
                 }
             }
         }
@@ -637,15 +669,53 @@ fun HashEntry1(index: Int, currentStateViewModel: CurrentStateViewModel = viewMo
 }
 
 
-fun createStringList(): LinkedList<String?>{
+fun createStringList(): LinkedList<String?> {
     val list = LinkedList<String?>()
-    list.addAll(listOf(null, null, null, null, null,null,null,null,null,null,null,null,null,null,null,null))
+    list.addAll(
+        listOf(
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        )
+    )
     return list
 }
 
-fun createIntList(): LinkedList<Int?>{
+fun createIntList(): LinkedList<Int?> {
     val list = LinkedList<Int?>()
-    list.addAll(listOf(null, null, null, null, null,null,null,null,null,null,null,null,null,null,null,null))
+    list.addAll(
+        listOf(
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        )
+    )
     return list
 }
 
@@ -655,17 +725,19 @@ fun createIntList(): LinkedList<Int?>{
 fun DefaultPreview() {
     HashmapzTheme {
         val currentState by remember {
-            mutableStateOf(CurrentState(
-                mapSize = 16,
-                steps = 1,
-                keyList = createStringList(),
-                valueList = createStringList(),
-                hashcodeList = createIntList()
-            ))
+            mutableStateOf(
+                CurrentState(
+                    mapSize = 16,
+                    steps = 1,
+                    keyList = createStringList(),
+                    valueList = createStringList(),
+                    hashcodeList = createIntList()
+                )
+            )
         }
 
-        val viewModel : CurrentStateViewModel = CurrentStateViewModel()
+        val viewModel: CurrentStateViewModel = CurrentStateViewModel()
         val commandController = viewModel.getCommandController()
-        Home(rememberNavController(), commandController, viewModel )
+        Home(rememberNavController(), commandController, viewModel)
     }
 }
