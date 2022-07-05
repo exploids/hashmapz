@@ -12,13 +12,13 @@ class CalculateIndexCommand : Command{
         val key: String? = state.usedKey
         state.usedHashcode = key.hashCode()
         state.usedIndex = key.hashCode().mod(state.mapSize)
-        state.prevDescription = state.currentDescription
+        state.prevDescription.add(state.currentDescription)
         state.currentDescription = R.string.calculate_index_description
     }
 
     override fun undoCommand(state: CurrentState) {
         state.usedHashcode = null
         state.usedIndex = null
-        state.currentDescription = state.prevDescription!!
+        state.currentDescription = state.prevDescription.pop()
     }
 }

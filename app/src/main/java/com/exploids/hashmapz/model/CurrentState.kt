@@ -25,7 +25,6 @@ data class CurrentState(
     var isKeyEqual: Boolean? = null,
     var steps: Int,
     var currentDescription: Int = R.string.app_name,
-    var prevDescription: Int? = null,
     var prevCommands: Stack<Command> = Stack(),
     var nextCommands: ArrayDeque<Command> = ArrayDeque(),
     var actionHasFinished: Boolean? = null,
@@ -37,6 +36,7 @@ data class CurrentState(
     var savedHashcodeList: LinkedList<Int?>? = null,
     var foundValue: String? = null,
     var keyNotFound: Boolean? = null,
-    var probingMode: String = "Linear Probing"
-
+    var probingMode: String = "Linear Probing",
+    var prevDescription: Stack<Int> = Stack(),
+    var collisionCounter: Double = 1.0
     )

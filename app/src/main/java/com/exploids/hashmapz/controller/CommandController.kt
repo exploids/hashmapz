@@ -1,16 +1,17 @@
 package com.exploids.hashmapz.controller
 
-import androidx.compose.runtime.currentRecomposeScope
 import com.exploids.hashmapz.command.*
 import com.exploids.hashmapz.createIntList
 import com.exploids.hashmapz.createStringList
+import com.exploids.hashmapz.model.CurrentStateViewModel
 import com.exploids.hashmapz.model.CurrentState
 import java.util.*
 import kotlin.collections.ArrayDeque
+import kotlin.math.pow
 
-class CommandController(val currentState: CurrentState) {
+class CommandController(val currentState: CurrentState, val currentStateViewModel: CurrentStateViewModel) {
     private var usedIndex : Int = 0
-    private var usedHashcode : Int = 0
+    private var usedHashcode : Int = 1
 
     fun commandHasFinished() : Boolean {
         return currentState.actionHasFinished!!
@@ -24,7 +25,8 @@ class CommandController(val currentState: CurrentState) {
         currentState.loadFactor = loadFactor
     }
     fun add(key: String, value: String) {
-        println("Add wurde aufgerufen")
+        currentState.steps = 1
+        currentState.collisionCounter = 1.0
         currentState.nextCommands = ArrayDeque<Command>()
         currentState.prevCommands = Stack<Command>()
         currentState.usedKey = key
@@ -42,6 +44,7 @@ class CommandController(val currentState: CurrentState) {
         val key : String? = currentState.usedKey
         var index : Int? = usedIndex
         var steps : Int = 1
+        var counter: Double = 1.0
         if ( index?.let { keyList.get(it) } == null ) {
             commandDeck.addLast(CalculateIndexCommand())
             commandDeck.addLast(GoToIndexCommand())
@@ -64,12 +67,14 @@ class CommandController(val currentState: CurrentState) {
                 } else if (currentState.probingMode.equals("Quadratic Probing")) {
                     index = index?.plus(steps)
                     index = index?.mod(currentState.mapSize)
-                    steps *= steps
+                    steps = counter.pow(2).toInt()
+                    counter++
+                } else {
+                    index = key.hashCode().hashCode()
                 }
             }
             if (index?.let { keyList.get(it).equals(null) } == true) {
                 commandDeck.addLast(CheckFreeSlotCommand())
-                commandDeck.addLast(CheckIfKeysAreEqualCommand())
                 commandDeck.addLast(InsertEntriesCommand())
                 if (checkIfLoadFactorIsExeeded()) {
                     commandDeck.addLast(ExtendAndRestructureCommand())
@@ -94,6 +99,7 @@ class CommandController(val currentState: CurrentState) {
         if (checkIfLastCommandWasExecuted()) {
             sendActionHasFinished()
         }
+        currentStateViewModel.update()
     }
 
     /**
@@ -140,6 +146,7 @@ class CommandController(val currentState: CurrentState) {
             executePrevCommand()
             updatePrevCommand()
         }
+        currentStateViewModel.update()
     }
 
     private fun executePrevCommand() {
@@ -158,6 +165,8 @@ class CommandController(val currentState: CurrentState) {
     }
 
     fun search(key: String) {
+        currentState.steps = 1
+        currentState.collisionCounter = 1.0
         currentState.nextCommands = ArrayDeque<Command>()
         currentState.prevCommands = Stack<Command>()
         currentState.usedKey = key
@@ -203,6 +212,8 @@ class CommandController(val currentState: CurrentState) {
     }
 
     fun delete(key: String) {
+        currentState.steps = 1
+        currentState.collisionCounter = 1.0
         currentState.nextCommands = ArrayDeque<Command>()
         currentState.prevCommands = Stack<Command>()
         currentState.usedKey = key
