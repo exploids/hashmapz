@@ -188,13 +188,14 @@ fun Home(navController: NavController, commandController: CommandController, cur
                                 )
                             }
                             if (currentStateViewModel.listKey[index] == null) {
-                                Card {
+                                /*Card {
                                     Box(
                                         Modifier
                                             .height(80.dp)
                                             .fillMaxWidth()
                                     )
-                                }
+                                }*/
+                                HashEntry1(index = index, currentStateViewModel)
                             } else {
                                 HashEntry(index = index, currentStateViewModel)
                             }
@@ -566,6 +567,43 @@ fun HashEntry(index: Int, currentStateViewModel: CurrentStateViewModel = viewMod
         }
     }
 }
+
+@ExperimentalMaterial3Api
+@Composable
+@Preview
+fun HashEntry1(index: Int, currentStateViewModel: CurrentStateViewModel = viewModel()) {
+    Card(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row() {
+            Column(
+                modifier = Modifier
+                    .padding(10.dp)
+            ) {
+                Text(text = "Key")
+                Text(text = currentStateViewModel.listKey[index].toString())
+                Text(text = "HashCode")
+                Text(text = currentStateViewModel.hashList[index].toString())
+            }
+            Row(
+                Modifier.background(color = Color(228, 200, 243, 255)),
+                horizontalArrangement = Arrangement.End
+
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        
+                ) {
+
+                    Text(text = "haayy")
+
+                }
+            }
+        }
+    }
+}
+
 
 fun createStringList(): LinkedList<String?>{
     val list = LinkedList<String?>()
