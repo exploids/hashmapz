@@ -177,7 +177,8 @@ fun Home(
                                 currentStateViewModel.state.usedKey ?: "(?)",
                                 currentStateViewModel.state.usedHashcode ?: "(?)",
                                 currentStateViewModel.state.mapSize,
-                                currentStateViewModel.state.usedIndex ?: "(?)"
+                                currentStateViewModel.state.usedIndex ?: "(?)",
+                                currentStateViewModel.state.steps
                             )
                             Crossfade(targetState = text) {
                                 Text(it)
