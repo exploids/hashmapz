@@ -117,8 +117,19 @@ class MainActivity : ComponentActivity() {
 fun Home(
     navController: NavController,
     commandController: CommandController,
-    currentStateViewModel: CurrentStateViewModel = viewModel()
+    currentStateViewModel: CurrentStateViewModel
 ) {
+
+    var isFirstTime by remember {
+        mutableStateOf(true)
+    }
+    if (isFirstTime) {
+        commandController.renewMap("Linear Probing", 0.75F)
+        currentStateViewModel.update()
+        isFirstTime = false
+    }
+
+
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden
@@ -466,7 +477,7 @@ fun RenewBottomSheet(
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState
 ) {
-    var selectedProbingMode by remember { mutableStateOf("") }
+    var selectedProbingMode by remember { mutableStateOf("Linear Probing") }
     var loadfactor by remember { mutableStateOf("0.75") }
     BottomSheetContent(title = "Renew Hashmap", label = "Renew", {
         var expanded by remember { mutableStateOf(false) }
@@ -513,7 +524,6 @@ fun RenewBottomSheet(
             },
             label = { Text(text = "Load factor") })
     }, currentStateViewModel, scope, sheetState) {
-        println(loadfactor.toFloat())
         currentStateViewModel.getCommandController()
             .renewMap(selectedProbingMode, loadfactor.toFloat())
         currentStateViewModel.update()

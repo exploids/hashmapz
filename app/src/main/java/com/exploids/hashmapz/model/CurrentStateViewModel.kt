@@ -2,10 +2,13 @@ package com.exploids.hashmapz.model
 
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
+import com.exploids.hashmapz.R
+import com.exploids.hashmapz.command.Command
 import com.exploids.hashmapz.controller.CommandController
 import com.exploids.hashmapz.createIntList
 import com.exploids.hashmapz.createStringList
 import java.util.*
+import kotlin.collections.ArrayDeque
 
 class CurrentStateViewModel() : ViewModel() {
 
@@ -14,7 +17,9 @@ class CurrentStateViewModel() : ViewModel() {
         steps = 1,
         keyList = createStringList(),
         valueList = createStringList(),
-        hashcodeList = createIntList()
+        hashcodeList = createIntList(),
+        nextCommands = ArrayDeque<Command>(),
+        currentDescription = R.string.explanation_getting_started
     ))
 
     var isPrevDisabled by mutableStateOf(state.prevCommands.isEmpty())

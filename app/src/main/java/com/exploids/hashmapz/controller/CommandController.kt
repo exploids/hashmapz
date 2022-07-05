@@ -1,5 +1,7 @@
 package com.exploids.hashmapz.controller
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.exploids.hashmapz.R
 import com.exploids.hashmapz.R.string
 import com.exploids.hashmapz.command.*
@@ -20,6 +22,7 @@ class CommandController(val currentState: CurrentState, val currentStateViewMode
     }
 
     fun renewMap (probingMode: String,loadFactor: Float) {
+        currentState.mapSize = 8
         currentState.keyList = createStringList()
         currentState.valueList = createStringList()
         currentState.hashcodeList = createIntList()
@@ -116,6 +119,7 @@ class CommandController(val currentState: CurrentState, val currentStateViewMode
             sendActionHasFinished()
         }
         currentStateViewModel.update()
+
     }
 
     /**
@@ -141,6 +145,7 @@ class CommandController(val currentState: CurrentState, val currentStateViewMode
             var nextCommand: Command = currentState.nextCommands!!.first()
             currentState.currentCommand = nextCommand
         }
+
 
     }
 
