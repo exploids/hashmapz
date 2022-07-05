@@ -1,5 +1,7 @@
 package com.exploids.hashmapz.controller
 
+import com.exploids.hashmapz.R
+import com.exploids.hashmapz.R.string
 import com.exploids.hashmapz.command.*
 import com.exploids.hashmapz.createIntList
 import com.exploids.hashmapz.createStringList
@@ -23,6 +25,10 @@ class CommandController(val currentState: CurrentState, val currentStateViewMode
         currentState.hashcodeList = createIntList()
         currentState.probingMode = probingMode
         currentState.loadFactor = loadFactor
+        currentState.nextCommands = ArrayDeque<Command>()
+        currentState.prevCommands = Stack<Command>()
+        currentState.currentDescription = R.string.app_name
+        currentState.currentIndex = null
     }
     fun add(key: String, value: String) {
         currentState.currentIndex = null

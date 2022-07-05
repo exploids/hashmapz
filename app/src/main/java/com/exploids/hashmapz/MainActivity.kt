@@ -192,7 +192,9 @@ fun Home(navController: NavController, commandController: CommandController, cur
                     contentPadding = PaddingValues(0.dp, 0.dp, 0.dp, 16.dp)
                 ) {
                     if (currentStateViewModel.currentIndex != null){
-                        scope.launch { listState.scrollToItem(currentStateViewModel.currentIndex!!, 0) }
+                        scope.launch {
+                            listState.animateScrollToItem(currentStateViewModel.currentIndex!!, 0)
+                        }
                     }
                     items(currentStateViewModel.mapSize) { index ->
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
