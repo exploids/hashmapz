@@ -5,6 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,11 +17,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -48,6 +48,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -60,14 +61,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -168,7 +167,7 @@ fun Home(
                             modifier = Modifier.align(Alignment.End),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Button(
+                            OutlinedButton(
                                 onClick = {
                                     commandController.prevCommand()
                                     currentStateViewModel.update()
@@ -202,37 +201,55 @@ fun Home(
                         }
                     }
                     items(currentStateViewModel.mapSize) { index ->
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        val scale: Float by animateFloatAsState(if (currentStateViewModel.currentIndex == index) 1.08f else 1f)
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier
+                                .height(IntrinsicSize.Min)
+                                .animateItemPlacement(animationSpec = tween())
+                        ) {
                             Row(
                                 modifier = Modifier
-                                    .height(100.dp)
+                                    .fillMaxHeight()
                                     .width(40.dp),
                                 horizontalArrangement = Arrangement.Start,
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 val color =
-                                    if (currentStateViewModel.currentIndex != null && currentStateViewModel.currentIndex == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                    if (currentStateViewModel.currentIndex == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                                 Text(
                                     text = index.toString(),
                                     style = MaterialTheme.typography.headlineSmall,
                                     color = color
                                 )
                             }
-                            if (currentStateViewModel.listKey[index] == null) {
-                                Card {
-                                    Box(
-                                        Modifier
-                                            .height(100.dp)
-                                            .fillMaxWidth()
-
-                                    )
+                            Card(
+                                modifier = Modifier
+                                    .scale(scale)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .animateContentSize(animationSpec = tween())
+                                ) {
+                                    Crossfade(
+                                        currentStateViewModel.listKey[index] == null,
+                                        animationSpec = tween()
+                                    ) {
+                                        if (it) {
+                                            Box(
+                                                Modifier
+                                                    .height(56.dp)
+                                                    .fillMaxWidth()
+                                            )
+                                        } else {
+                                            HashEntry(
+                                                currentStateViewModel.listKey[index].toString(),
+                                                currentStateViewModel.hashList[index].toString(),
+                                                currentStateViewModel.valueList[index].toString()
+                                            )
+                                        }
+                                    }
                                 }
-                            } else {
-                                HashEntry1(
-                                    currentStateViewModel.listKey[index].toString(),
-                                    currentStateViewModel.hashList[index].toString(),
-                                    currentStateViewModel.valueList[index].toString()
-                                )
                             }
                         }
                     }
@@ -508,161 +525,40 @@ fun RenewBottomSheet(
 
 }
 
-
-// Function für HashEntry
-// Objekt von Entry Klasse wird übergeben
-// enthält somit Key und Hashcode
-
-@Composable
-@Preview
-fun HashEntry(index: Int = 0, currentStateViewModel: CurrentStateViewModel = viewModel()) {
-    Row(
-        modifier = Modifier
-            .padding(all = 4.dp)
-    ) {
-        // Platz zwischen Rand und Textbeginn
-        Spacer(modifier = Modifier.width(11.dp))
-        // Texte in unterschiedlichen Zeilen
-        Column {
-            // Text für Key Überschrift
-            androidx.compose.material.Text(
-                "Key", fontSize = 13.sp, modifier = Modifier.width(1500.dp),
-                color = Color(
-                    133,
-                    133,
-                    133,
-                    255
-                )
-            )
-            // Add a vertical space between the author and message texts
-            Spacer(
-                modifier = Modifier.height(1.dp)
-            )
-            println(index)
-            println(Arrays.toString(currentStateViewModel.listKey.toArray()))
-            androidx.compose.material.Text(
-                text = currentStateViewModel.listKey[index].toString(),
-                // Farbe des Textes
-                color = Color(0, 0, 0, 255),
-                // Typografie des Textes
-                // subztitle2 = Größenveränderung
-                style = androidx.compose.material.MaterialTheme.typography.subtitle1
-            )
-            Spacer(
-                modifier = Modifier.height(8.dp)
-            )
-            // Text für HashCode Überschrift
-            androidx.compose.material.Text(
-                "HashCode", fontSize = 13.sp, modifier = Modifier.width(150.dp),
-                color = Color(
-                    133,
-                    133,
-                    133,
-                    255
-                )
-            )
-            Spacer(
-                modifier = Modifier.height(1.dp)
-            )
-            // Text für HashCode
-            androidx.compose.material.Text(
-                text = currentStateViewModel.hashList[index].toString(),
-                // Farbe des Textes
-                color = Color(0, 0, 0, 255),
-                // Typografie des Textes
-                // subztitle2 = Größenveränderung
-                style = androidx.compose.material.MaterialTheme.typography.subtitle1
-            )
-
-        } // End Column
-    } // End Row
-    Row(
-        modifier = Modifier
-            .padding(2.dp)
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.End,
-    ) {
-        Box(
-            Modifier
-                .size(100.dp)
-                .background(color = Color(228, 200, 243, 255))
-        )
-        {
-            Column() {
-                androidx.compose.material.Text(
-                    "", fontSize = 15.sp, modifier = Modifier.width(150.dp),
-                    color = Color(
-                        133,
-                        133,
-                        133,
-                        255
-                    )
-                )
-                androidx.compose.material.Text(
-                    "Value", fontSize = 15.sp, modifier = Modifier.width(150.dp),
-                    color = Color(
-                        133,
-                        133,
-                        133,
-                        255
-                    ), textAlign = TextAlign.Center
-                )
-                Spacer(
-                    modifier = Modifier.height(7.dp)
-                )
-                androidx.compose.material.Text(
-                    currentStateViewModel.valueList[index].toString(),
-                    fontSize = 15.sp,
-                    modifier = Modifier.width(150.dp),
-                    color = Color(
-                        133,
-                        133,
-                        133,
-                        255
-                    ),
-                    textAlign = TextAlign.Center
-                )
-            }
-        }
-    }
-}
-
 @ExperimentalMaterial3Api
 @Composable
 @Preview
-fun HashEntry1(
+fun HashEntry(
     key: String = "Banana",
     hashCode: String = "123456789",
     value: String = "32 pieces"
 ) {
-    Card(
+    Row(
         modifier = Modifier
             .height(IntrinsicSize.Min)
             .fillMaxWidth()
     ) {
-        Row() {
-            Column(
-                modifier = Modifier
-                    .weight(0.5f)
-                    .padding(12.dp),
-            ) {
-                Text(text = "Key", style = Typography.labelSmall)
-                Text(text = key)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "Hash code", style = Typography.labelSmall)
-                Text(text = hashCode)
-            }
-            Box(
-                modifier = Modifier
-                    .weight(0.5f)
-                    .fillMaxHeight()
-                    .background(color = MaterialTheme.colorScheme.primaryContainer)
-                    .padding(12.dp)
-            ) {
-                Column {
-                    Text(text = "Value", style = Typography.labelSmall)
-                    Text(text = value)
-                }
+        Column(
+            modifier = Modifier
+                .weight(0.5f)
+                .padding(12.dp),
+        ) {
+            Text(text = "Key", style = Typography.labelSmall)
+            Text(text = key)
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = "Hash code", style = Typography.labelSmall)
+            Text(text = hashCode)
+        }
+        Box(
+            modifier = Modifier
+                .weight(0.5f)
+                .fillMaxHeight()
+                .background(color = MaterialTheme.colorScheme.primaryContainer)
+                .padding(12.dp)
+        ) {
+            Column {
+                Text(text = "Value", style = Typography.labelSmall)
+                Text(text = value)
             }
         }
     }
@@ -671,13 +567,13 @@ fun HashEntry1(
 
 fun createStringList(): LinkedList<String?> {
     val list = LinkedList<String?>()
-    list.addAll(listOf(null, null, null, null, null,null,null,null))
+    list.addAll(listOf(null, null, null, null, null, null, null, null))
     return list
 }
 
 fun createIntList(): LinkedList<Int?> {
     val list = LinkedList<Int?>()
-    list.addAll(listOf(null, null, null, null, null,null,null,null))
+    list.addAll(listOf(null, null, null, null, null, null, null, null))
     return list
 }
 
