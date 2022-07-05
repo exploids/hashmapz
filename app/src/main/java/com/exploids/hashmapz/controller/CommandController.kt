@@ -25,6 +25,7 @@ class CommandController(val currentState: CurrentState, val currentStateViewMode
         currentState.loadFactor = loadFactor
     }
     fun add(key: String, value: String) {
+        currentState.currentIndex = null
         currentState.steps = 1
         currentState.collisionCounter = 1.0
         currentState.nextCommands = ArrayDeque<Command>()
@@ -165,6 +166,7 @@ class CommandController(val currentState: CurrentState, val currentStateViewMode
     }
 
     fun search(key: String) {
+        currentState.currentIndex = null
         currentState.steps = 1
         currentState.collisionCounter = 1.0
         currentState.nextCommands = ArrayDeque<Command>()
@@ -212,6 +214,7 @@ class CommandController(val currentState: CurrentState, val currentStateViewMode
     }
 
     fun delete(key: String) {
+        currentState.currentIndex = null
         currentState.steps = 1
         currentState.collisionCounter = 1.0
         currentState.nextCommands = ArrayDeque<Command>()
