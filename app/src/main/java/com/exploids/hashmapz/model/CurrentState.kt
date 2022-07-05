@@ -24,7 +24,7 @@ data class CurrentState(
     var isSlotFree: Boolean? = null,
     var isKeyEqual: Boolean? = null,
     var steps: Int,
-    var currentDescription: Int = R.string.app_name,
+    var currentDescription: Int = R.string.explanation_getting_started,
     var prevCommands: Stack<Command> = Stack(),
     var nextCommands: ArrayDeque<Command> = ArrayDeque(),
     var actionHasFinished: Boolean? = null,

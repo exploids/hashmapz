@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">hashmapz</string>
     <string name="title_activity_tutorial">TutorialActivity</string>
+    <string name="explanation_getting_started">The hash map is currently empty. Get started by inserting an entry.</string>
     <string name="calculate_index_description">The Key gets hashed and the index is calculated:</string>
     <string name="go_to_index">Now we move to the calculated index</string>
     <string name="insert_entries">The entry is successfully inserted</string>
