@@ -3,6 +3,8 @@ package com.exploids.hashmapz
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -45,6 +47,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -137,10 +140,10 @@ fun Home(navController: NavController, commandController: CommandController, cur
             bottomBar = {
                 HomeBottomBar(navController, scope, sheetState, setSelectedBottomSheet)
             }
-        ) {
+        ) { paddingValues ->
             Column(
                 modifier = Modifier
-                    .padding(it)
+                    .padding(paddingValues)
                     .padding(16.dp, 16.dp, 16.dp, 0.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
@@ -151,7 +154,11 @@ fun Home(navController: NavController, commandController: CommandController, cur
                             .padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        Text(stringResource(id = currentStateViewModel.currentDescription))
+                        Box(modifier = Modifier.animateContentSize()) {
+                            Crossfade(targetState = currentStateViewModel.currentDescription) {
+                                Text(stringResource(id = it))
+                            }
+                        }
                         Row(
                             modifier = Modifier.align(Alignment.End),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -315,16 +322,18 @@ fun BottomSheetContent(
     sheetState: ModalBottomSheetState,
     onClick: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .padding(16.dp)
-            .fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        Text(text = title, style = MaterialTheme.typography.titleLarge)
-        content()
-        Button(modifier = Modifier.align(Alignment.End), onClick = onClick) {
-            Text(text = label)
+    Surface {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            Text(text = title, style = MaterialTheme.typography.titleLarge)
+            content()
+            Button(modifier = Modifier.align(Alignment.End), onClick = onClick) {
+                Text(text = label)
+            }
         }
     }
 }
