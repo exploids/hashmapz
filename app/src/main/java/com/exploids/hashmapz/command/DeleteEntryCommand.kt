@@ -1,5 +1,6 @@
 package com.exploids.hashmapz.command
 
+import com.exploids.hashmapz.R
 import com.exploids.hashmapz.model.CurrentState
 
 class DeleteEntryCommand : Command {
@@ -11,6 +12,7 @@ class DeleteEntryCommand : Command {
         state.valueList[state.currentIndex!!] = null
         state.hashcodeList[state.currentIndex!!] = null
         state.prevDescription.add(state.currentDescription)
+        state.currentDescription = R.string.delete_entry
     }
 
     override fun undoCommand(state: CurrentState) {
