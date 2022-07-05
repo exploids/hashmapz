@@ -57,6 +57,9 @@ class CommandController(val currentState: CurrentState, val currentStateViewMode
             commandDeck.addLast(GoToIndexCommand())
             commandDeck.addLast(CheckFreeSlotCommand())
             commandDeck.addLast(InsertEntriesCommand())
+            if (checkIfLoadFactorIsExeeded()) {
+                commandDeck.addLast(ExtendAndRestructureCommand())
+            }
         } else {
             commandDeck.addLast(CalculateIndexCommand())
             commandDeck.addLast(GoToIndexCommand())
@@ -80,18 +83,19 @@ class CommandController(val currentState: CurrentState, val currentStateViewMode
                     index = index?.mod(currentState.mapSize)
                     counter++
                 } else {
-                    index = key.hashCode().hashCode()
+
                 }
             }
             if (index?.let { keyList.get(it).equals(null) } == true) {
                 commandDeck.addLast(CheckFreeSlotCommand())
                 commandDeck.addLast(InsertEntriesCommand())
+                if (checkIfLoadFactorIsExeeded()) {
+                    commandDeck.addLast(ExtendAndRestructureCommand())
+                }
             }
 
         }
-        if (checkIfLoadFactorIsExeeded()) {
-            commandDeck.addLast(ExtendAndRestructureCommand())
-        }
+
         currentState.nextCommands = commandDeck
     }
 
