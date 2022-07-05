@@ -41,7 +41,6 @@ class CurrentStateViewModel() : ViewModel() {
         isPrevDisabled = state.prevCommands.isEmpty()
         isNextDisabled = state.nextCommands.isEmpty()
         listKey = LinkedList(state.keyList.toList())
-        println(Arrays.toString(listKey.toArray()))
         valueList = LinkedList(state.valueList.toList())
         hashList = LinkedList(state.hashcodeList.toList())
         currentIndex = state.currentIndex

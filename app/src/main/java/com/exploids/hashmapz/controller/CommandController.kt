@@ -86,17 +86,19 @@ class CommandController(val currentState: CurrentState, val currentStateViewMode
             if (index?.let { keyList.get(it).equals(null) } == true) {
                 commandDeck.addLast(CheckFreeSlotCommand())
                 commandDeck.addLast(InsertEntriesCommand())
-                if (checkIfLoadFactorIsExeeded()) {
-                    commandDeck.addLast(ExtendAndRestructureCommand())
-                }
             }
+
+        }
+        if (checkIfLoadFactorIsExeeded()) {
+            commandDeck.addLast(ExtendAndRestructureCommand())
         }
         currentState.nextCommands = commandDeck
     }
 
     private fun checkIfLoadFactorIsExeeded(): Boolean {
         val entryCounter = currentState.keyList.count(predicate = {it != null})
-        if (entryCounter > currentState.loadFactor * currentState.mapSize) {
+        print(entryCounter > currentState.loadFactor * currentState.mapSize)
+        if (entryCounter >= currentState.loadFactor * currentState.mapSize) {
             return true
         }
         return false

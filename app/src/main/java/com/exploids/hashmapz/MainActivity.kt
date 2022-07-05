@@ -597,13 +597,13 @@ fun HashEntry(index: Int, currentStateViewModel: CurrentStateViewModel = viewMod
 
 fun createStringList(): LinkedList<String?>{
     val list = LinkedList<String?>()
-    list.addAll(listOf(null, null, null, null, null,null,null,null,null,null,null,null,null,null,null,null))
+    list.addAll(listOf(null, null, null, null, null,null,null,null))
     return list
 }
 
 fun createIntList(): LinkedList<Int?>{
     val list = LinkedList<Int?>()
-    list.addAll(listOf(null, null, null, null, null,null,null,null,null,null,null,null,null,null,null,null))
+    list.addAll(listOf(null, null, null, null, null,null,null,null))
     return list
 }
 
