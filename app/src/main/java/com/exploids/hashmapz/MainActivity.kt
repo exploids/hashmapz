@@ -76,11 +76,13 @@ import androidx.navigation.compose.rememberNavController
 import com.exploids.hashmapz.controller.CommandController
 import com.exploids.hashmapz.model.CurrentState
 import com.exploids.hashmapz.model.CurrentStateViewModel
+import com.exploids.hashmapz.ui.keys
 import com.exploids.hashmapz.ui.theme.HashmapzTheme
 import com.exploids.hashmapz.ui.theme.Typography
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.util.*
+import kotlin.random.Random
 
 
 @ExperimentalFoundationApi
@@ -395,17 +397,19 @@ fun InsertBottomSheet(
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState
 ) {
-    var key by remember { mutableStateOf("Banana") }
-    var value by remember { mutableStateOf("32 pieces") }
+    var key by remember { mutableStateOf("") }
+    var keyDefault by remember { mutableStateOf(keys[Random.nextInt(keys.size)]) }
+    var value by remember { mutableStateOf("") }
+    var valueDefault by remember { mutableStateOf(Random.nextInt(100).toString()) }
     BottomSheetContent(title = "Insert or update an entry", label = "Set", {
-
-
         TextField(
             modifier = Modifier.fillMaxWidth(),
             value = key,
             onValueChange = { newText ->
                 key = newText
             },
+            singleLine = true,
+            placeholder = { Text(text = keyDefault) },
             label = { Text(text = "Key") })
 
         TextField(
@@ -414,11 +418,20 @@ fun InsertBottomSheet(
             onValueChange = { newText ->
                 value = newText
             },
+            singleLine = true,
+            placeholder = { Text(text = valueDefault) },
             label = { Text(text = "Value") })
 
     }, currentStateViewModel, scope, sheetState) {
-        currentStateViewModel.getCommandController().add(key, value)
+        currentStateViewModel.getCommandController().add(
+            if (key.isBlank()) keyDefault else key,
+            if (value.isBlank()) valueDefault else value
+        )
         currentStateViewModel.update()
+        key = ""
+        keyDefault = keys[Random.nextInt(keys.size)]
+        value = ""
+        valueDefault = Random.nextInt(100).toString()
         scope.launch {
             sheetState.hide()
         }
@@ -433,7 +446,7 @@ fun LookupBottomSheet(
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState
 ) {
-    var key by remember { mutableStateOf("Banana") }
+    var key by remember { mutableStateOf("") }
     BottomSheetContent(title = "Lookup an entry", label = "Lookup", {
         TextField(
             modifier = Modifier.fillMaxWidth(),
@@ -441,6 +454,7 @@ fun LookupBottomSheet(
             onValueChange = { newText ->
                 key = newText
             },
+            singleLine = true,
             label = { Text(text = "Key") })
     }, currentStateViewModel, scope, sheetState) {
         currentStateViewModel.getCommandController().search(key)
@@ -459,7 +473,7 @@ fun RemoveBottomSheet(
     scope: CoroutineScope,
     sheetState: ModalBottomSheetState
 ) {
-    var key by remember { mutableStateOf("Banana") }
+    var key by remember { mutableStateOf("") }
     BottomSheetContent(title = "Remove an entry", label = "Remove", {
         TextField(
             modifier = Modifier.fillMaxWidth(),
@@ -467,6 +481,7 @@ fun RemoveBottomSheet(
             onValueChange = { newText ->
                 key = newText
             },
+            singleLine = true,
             label = { Text(text = "Key") })
     }, currentStateViewModel, scope, sheetState) {
         currentStateViewModel.getCommandController().delete(key)
@@ -531,6 +546,7 @@ fun RenewBottomSheet(
             onValueChange = { newText ->
                 loadfactor = newText
             },
+            singleLine = true,
             label = { Text(text = "Load factor") })
     }, currentStateViewModel, scope, sheetState) {
         currentStateViewModel.getCommandController()
