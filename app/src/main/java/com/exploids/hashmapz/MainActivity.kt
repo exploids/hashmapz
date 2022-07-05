@@ -220,7 +220,7 @@ fun Home(
                             listState.animateScrollToItem(currentStateViewModel.currentIndex!!, 0)
                         }
                     }
-                    items(currentStateViewModel.mapSize) { index ->
+                    items(currentStateViewModel.mapSize, key = { currentStateViewModel.listKey[it] ?: it }) { index ->
                         val scale: Float by animateFloatAsState(if (currentStateViewModel.currentIndex == index) 1.08f else 1f)
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
