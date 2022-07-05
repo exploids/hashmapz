@@ -30,7 +30,7 @@ class CommandController(val currentState: CurrentState, val currentStateViewMode
         currentState.loadFactor = loadFactor
         currentState.nextCommands = ArrayDeque<Command>()
         currentState.prevCommands = Stack<Command>()
-        currentState.currentDescription = R.string.app_name
+        currentState.currentDescription = R.string.explanation_getting_started
         currentState.currentIndex = null
     }
     fun add(key: String, value: String) {

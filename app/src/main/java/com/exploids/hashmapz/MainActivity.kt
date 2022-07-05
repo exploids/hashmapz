@@ -170,8 +170,15 @@ fun Home(
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         Box(modifier = Modifier.animateContentSize()) {
-                            Crossfade(targetState = currentStateViewModel.currentDescription) {
-                                Text(stringResource(id = it))
+                            val text = stringResource(
+                                id = currentStateViewModel.currentDescription,
+                                currentStateViewModel.state.usedKey ?: "(?)",
+                                currentStateViewModel.state.usedHashcode ?: "(?)",
+                                currentStateViewModel.state.mapSize,
+                                currentStateViewModel.state.usedIndex ?: "(?)"
+                            )
+                            Crossfade(targetState = text) {
+                                Text(it)
                             }
                         }
                         Row(
@@ -242,22 +249,24 @@ fun Home(
                                     modifier = Modifier
                                         .animateContentSize(animationSpec = tween())
                                 ) {
+                                    val entry =
+                                        if (currentStateViewModel.listKey[index] == null) null else listOf(
+                                            currentStateViewModel.listKey[index].toString(),
+                                            currentStateViewModel.hashList[index].toString(),
+                                            currentStateViewModel.valueList[index].toString()
+                                        )
                                     Crossfade(
-                                        currentStateViewModel.listKey[index] == null,
+                                        entry,
                                         animationSpec = tween()
                                     ) {
-                                        if (it) {
+                                        if (it == null) {
                                             Box(
                                                 Modifier
                                                     .height(56.dp)
                                                     .fillMaxWidth()
                                             )
                                         } else {
-                                            HashEntry(
-                                                currentStateViewModel.listKey[index].toString(),
-                                                currentStateViewModel.hashList[index].toString(),
-                                                currentStateViewModel.valueList[index].toString()
-                                            )
+                                            HashEntry(it[0], it[1], it[2])
                                         }
                                     }
                                 }
