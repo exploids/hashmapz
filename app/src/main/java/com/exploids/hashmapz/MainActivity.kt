@@ -8,9 +8,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -191,7 +193,7 @@ fun Home(navController: NavController, commandController: CommandController, cur
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             Row(
                                 modifier = Modifier
-                                    .height(80.dp)
+                                    .height(100.dp)
                                     .width(40.dp),
                                 horizontalArrangement = Arrangement.Start,
                                 verticalAlignment = Alignment.CenterVertically,
@@ -204,17 +206,16 @@ fun Home(navController: NavController, commandController: CommandController, cur
                                 )
                             }
                             if (currentStateViewModel.listKey[index] == null) {
-                                /*Card {
+                                Card {
                                     Box(
                                         Modifier
-                                            .height(80.dp)
+                                            .height(100.dp)
                                             .fillMaxWidth()
 
                                     )
-                                }*/
-                                HashEntry1(index = index, currentStateViewModel)
+                                }
                             } else {
-                                HashEntry(index = index, currentStateViewModel)
+                                HashEntry1(index = index, currentStateViewModel)
                             }
                         }
                     }
@@ -476,6 +477,7 @@ fun RenewBottomSheet(currentStateViewModel:  CurrentStateViewModel = viewModel()
 // enthält somit Key und Hashcode
 
 @Composable
+@Preview
 fun HashEntry(index: Int, currentStateViewModel: CurrentStateViewModel = viewModel() ) {
     Row(
         modifier = Modifier
@@ -596,24 +598,26 @@ fun HashEntry1(index: Int, currentStateViewModel: CurrentStateViewModel = viewMo
             Column(
                 modifier = Modifier
                     .padding(10.dp)
+                    .weight(1f)
             ) {
-                Text(text = "Key")
+                Text(text = "Key", fontSize = 13.sp, color = Color(133,133,133,255))
                 Text(text = currentStateViewModel.listKey[index].toString())
-                Text(text = "HashCode")
+                Text(text = "HashCode", fontSize = 13.sp, color = Color(133,133,133,255))
                 Text(text = currentStateViewModel.hashList[index].toString())
             }
             Row(
-                Modifier.background(color = Color(228, 200, 243, 255)),
+                Modifier.background(color = MaterialTheme.colorScheme.primaryContainer),
                 horizontalArrangement = Arrangement.End
-
             ) {
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        
+                        .width(100.dp)
+                        .height(IntrinsicSize.Max),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-
-                    Text(text = "haayy")
+                    Text(text = "Value", fontSize = 15.sp, color = Color(133,133,133,255))
+                    Text(text = currentStateViewModel.valueList[index].toString())
 
                 }
             }
