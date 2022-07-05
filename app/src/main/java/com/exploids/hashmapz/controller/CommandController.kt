@@ -55,6 +55,9 @@ class CommandController(val currentState: CurrentState, val currentStateViewMode
             commandDeck.addLast(CalculateIndexCommand())
             commandDeck.addLast(GoToIndexCommand())
             while(index?.let { keyList.get(it) } != null || index?.let { keyList.get(it).equals(key) } == true) {
+                if (keyList[index!!] == null) {
+                    break
+                }
                 commandDeck.addLast(CheckFreeSlotCommand())
                 commandDeck.addLast(CheckIfKeysAreEqualCommand())
                 if (index?.let { keyList.get(it).equals(key) } == true) {
@@ -66,9 +69,9 @@ class CommandController(val currentState: CurrentState, val currentStateViewMode
                     index = index?.plus(steps)
                     index = index?.mod(currentState.mapSize)
                 } else if (currentState.probingMode.equals("Quadratic Probing")) {
+                    steps = counter.pow(2).toInt()
                     index = index?.plus(steps)
                     index = index?.mod(currentState.mapSize)
-                    steps = counter.pow(2).toInt()
                     counter++
                 } else {
                     index = key.hashCode().hashCode()
@@ -183,6 +186,8 @@ class CommandController(val currentState: CurrentState, val currentStateViewMode
         val keyList : LinkedList<String?> = currentState.keyList
         val key : String? = currentState.usedKey
         var index : Int? = usedIndex
+        var steps : Int = 1
+        var counter: Double = 1.0
 
         if (keyList[index!!] == null) {
             commandDeck.addLast(CalculateIndexCommand())
@@ -201,8 +206,17 @@ class CommandController(val currentState: CurrentState, val currentStateViewMode
                     break
                 }
                 commandDeck.addLast(GoToIndexInStepsCommand())
-                index = index?.plus(currentState.steps)
-                index = index?.mod(currentState.mapSize)
+                if(currentState.probingMode.equals("Linear Probing")) {
+                    index = index?.plus(steps)
+                    index = index?.mod(currentState.mapSize)
+                } else if (currentState.probingMode.equals("Quadratic Probing")) {
+                    steps = counter.pow(2).toInt()
+                    index = index?.plus(steps)
+                    index = index?.mod(currentState.mapSize)
+                    counter++
+                } else {
+                    index = key.hashCode().hashCode()
+                }
             }
             if (keyList[index!!] == null) {
                 commandDeck.addLast(CheckFreeSlotCommand())
@@ -231,6 +245,8 @@ class CommandController(val currentState: CurrentState, val currentStateViewMode
         val keyList : LinkedList<String?> = currentState.keyList
         val key : String? = currentState.usedKey
         var index : Int? = usedIndex
+        var steps : Int = 1
+        var counter: Double = 1.0
 
         if (keyList[index!!] == null) {
             commandDeck.addLast(CalculateIndexCommand())
@@ -249,8 +265,17 @@ class CommandController(val currentState: CurrentState, val currentStateViewMode
                     break
                 }
                 commandDeck.addLast(GoToIndexInStepsCommand())
-                index = index?.plus(currentState.steps)
-                index = index?.mod(currentState.mapSize)
+                if(currentState.probingMode.equals("Linear Probing")) {
+                    index = index?.plus(steps)
+                    index = index?.mod(currentState.mapSize)
+                } else if (currentState.probingMode.equals("Quadratic Probing")) {
+                    steps = counter.pow(2).toInt()
+                    index = index?.plus(steps)
+                    index = index?.mod(currentState.mapSize)
+                    counter++
+                } else {
+                    index = key.hashCode().hashCode()
+                }
             }
             if (keyList[index!!] == null) {
                 commandDeck.addLast(CheckFreeSlotCommand())
