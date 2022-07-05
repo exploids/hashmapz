@@ -203,7 +203,7 @@ fun Home(navController: NavController, commandController: CommandController, cur
                                 horizontalArrangement = Arrangement.Start,
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
-                                var color = if (currentStateViewModel.currentIndex != null && currentStateViewModel.currentIndex!!.equals(index))Color.Red else Color.Black
+                                val color = if (currentStateViewModel.currentIndex != null && currentStateViewModel.currentIndex == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                                 Text(
                                     text = index.toString(),
                                     style = MaterialTheme.typography.headlineSmall,
