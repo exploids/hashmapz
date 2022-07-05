@@ -10,7 +10,7 @@ import java.util.*
 class CurrentStateViewModel() : ViewModel() {
 
     var state by mutableStateOf( CurrentState(
-        mapSize = 16,
+        mapSize = 8,
         steps = 1,
         keyList = createStringList(),
         valueList = createStringList(),
