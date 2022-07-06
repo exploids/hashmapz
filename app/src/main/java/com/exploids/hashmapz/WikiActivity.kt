@@ -35,7 +35,7 @@ fun Wiki(navController: NavController) {
                 style = MaterialTheme.typography.bodyMedium)
             Text(text = "Deleting an entry sometimes restructures the hash map, why?",
                 style = MaterialTheme.typography.headlineMedium)
-            Text(text = "needs Text!", style = MaterialTheme.typography.bodyMedium)
+            Text(text = "For all records in a cluster, there must be no vacant slots between their natural hash position and their current position otherwise lookups will terminate before finding the record. Therefore the cluster will be restructured to fill up the gap.", style = MaterialTheme.typography.bodyMedium)
         }
     }
 }
