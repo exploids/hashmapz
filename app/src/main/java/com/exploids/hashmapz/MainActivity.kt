@@ -4,8 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -65,13 +65,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -83,7 +81,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.exploids.hashmapz.controller.CommandController
-import com.exploids.hashmapz.model.CurrentState
 import com.exploids.hashmapz.model.CurrentStateViewModel
 import com.exploids.hashmapz.ui.keys
 import com.exploids.hashmapz.ui.theme.HashmapzTheme
@@ -183,24 +180,22 @@ fun Home(
                         }
                     }
                     items(currentStateViewModel.mapSize) { index ->
+                        val color1 by animateColorAsState(if (currentStateViewModel.currentIndex == index) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.background)
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             modifier = Modifier
                                 .height(IntrinsicSize.Min)
                                 .animateItemPlacement(animationSpec = tween())
+                                .clip(MaterialTheme.shapes.medium)
+                                .background(color1)
                         ) {
-                            val color1 =
-                                if (currentStateViewModel.currentIndex == index) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.background
                             Box(
                                 modifier = Modifier
                                     .fillMaxHeight()
-                                    .width(40.dp)
-                                    .clip(MaterialTheme.shapes.small)
-                                    .background(color1),
+                                    .width(40.dp),
                                 contentAlignment = Alignment.Center
                             ) {
-                                val color =
-                                    if (currentStateViewModel.currentIndex == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                val color by animateColorAsState(if (currentStateViewModel.currentIndex == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface)
                                 Text(
                                     text = index.toString(),
                                     style = MaterialTheme.typography.headlineSmall,
@@ -208,10 +203,7 @@ fun Home(
                                 )
                             }
                             Card {
-                                Box(
-                                    modifier = Modifier
-                                        .animateContentSize(animationSpec = tween())
-                                ) {
+                                Box {
                                     val entry =
                                         if (currentStateViewModel.listKey[index] == null) null else listOf(
                                             currentStateViewModel.listKey[index].toString(),
