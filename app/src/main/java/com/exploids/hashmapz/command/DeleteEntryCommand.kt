@@ -4,6 +4,7 @@ import com.exploids.hashmapz.R
 import com.exploids.hashmapz.model.CurrentState
 
 class DeleteEntryCommand : Command {
+    var savedIndex : Int = 0
     override fun doCommand(state: CurrentState) {
         var index = state.insertOrderKeyList.indexOf(state.keyList[state.currentIndex!!])
         state.insertOrderKeyList.removeAt(index)
@@ -17,9 +18,13 @@ class DeleteEntryCommand : Command {
         state.hashcodeList[state.currentIndex!!] = null
         state.prevDescription.add(state.currentDescription)
         state.currentDescription = R.string.delete_entry
+        savedIndex = state.currentIndex!!
+        state.currentIndex = null
+
     }
 
     override fun undoCommand(state: CurrentState) {
+        state.currentIndex = savedIndex
         state.insertOrderKeyList.add(state.insertOrderIndex!!, state.savedKey)
         state.insertOrderValueList.add(state.insertOrderIndex!!, state.savedValue)
         println("Halluuuu " + state.insertOrderKeyList )
