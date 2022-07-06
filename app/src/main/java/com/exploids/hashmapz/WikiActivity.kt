@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.exploids.hashmapz.ui.components.NestedScaffold
@@ -18,7 +19,8 @@ import com.exploids.hashmapz.ui.theme.HashmapzTheme
 @Composable
 fun Wiki(navController: NavController) {
     NestedScaffold(navController = navController, title = "Wiki") {
-        Column(modifier = Modifier.padding(it)
+        Column(modifier = Modifier.padding(it).padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(text = "What are hash maps?", style = MaterialTheme.typography.titleLarge)
             Text(text = "A hash map maps a key to a value and stores this value pair in a hash table. The key is hashed and the hash code is used as an index to reference where the value is stored in the table. Also, key and value do not have to be of the same data type, e.g. the key can be of the data type string and the value of the data type integer.",
