@@ -2,16 +2,17 @@
     <string name="app_name">hashmapz</string>
     <string name="title_activity_tutorial">TutorialActivity</string>
     <string name="explanation_getting_started">Get started by inserting an entry.</string>
-    <string name="calculate_index_description">The key gets hashed and the index is calculated:\nhash(%1$s) = %2$s\n%2$s mod %3$s = %4$s</string>
-    <string name="go_to_index">Now we move to the calculated index \nand check if it is empty.</string>
-    <string name="insert_entries">The entry is successfully inserted.</string>
-    <string name="check_free_slot_case1">The slot is not occupied.</string>
-    <string name="check_free_slot_case2">The slot is occupied. \nAre the keys equal?</string>
+    <string name="calculate_index_description">The key gets hashed and the slot index is calculated:\nhash(*%1$s*) = *%2$s*\n*%2$s* mod *%3$s* = *%4$s*</string>
+    <string name="go_to_index">Now we move to the calculated slot %4$s and check if it is occupied.</string>
+    <string name="insert_entries">The entry has been successfully inserted.</string>
+    <string name="resize_map">The load factor has been exceeded, therefore the hash map has been resized.</string>
+    <string name="check_free_slot_case1">The slot is unoccupied.</string>
+    <string name="check_free_slot_case2">The slot is occupied. Checking if the keys are equal.</string>
     <string name="check_equal_case1">The key is the same as your entry\'s key.</string>
-    <string name="return_value">This is the entry you were looking for.</string>
-    <string name="update_value">The value has been updated.</string>
+    <string name="return_value">The entry for your key *%1$s* has been found. It has the value *%6$s*.</string>
+    <string name="update_value">The entry has been updated.</string>
     <string name="delete_entry">The entry has been deleted.</string>
     <string name="key_not_found">The entry you searched for was not found.</string>
     <string name="check_equal_case2">The key is not the same as your entry\'s key.</string>
-    <string name="go_to_index_in_steps">We move %5$s step(s) forward to the next index.</string>
+    <string name="go_to_index_in_steps">We move %5$s step(s) forward to the next slot.</string>
 </resources>

@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -54,6 +55,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -65,7 +67,12 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -80,6 +87,7 @@ import com.exploids.hashmapz.ui.keys
 import com.exploids.hashmapz.ui.theme.HashmapzTheme
 import com.exploids.hashmapz.ui.theme.Typography
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.random.Random
@@ -89,10 +97,10 @@ import kotlin.random.Random
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val viewModel = CurrentStateViewModel()
+        val commandController = viewModel.getCommandController()
         setContent {
             val navController = rememberNavController()
-            val viewModel: CurrentStateViewModel = CurrentStateViewModel()
-            val commandController = viewModel.getCommandController()
             HashmapzTheme {
                 NavHost(navController = navController, startDestination = "home") {
                     composable("home") {
@@ -121,17 +129,6 @@ fun Home(
     commandController: CommandController,
     currentStateViewModel: CurrentStateViewModel
 ) {
-
-    var isFirstTime by remember {
-        mutableStateOf(true)
-    }
-    if (isFirstTime) {
-        commandController.renewMap("Linear Probing", 0.75F)
-        currentStateViewModel.update()
-        isFirstTime = false
-    }
-
-
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden
@@ -141,6 +138,14 @@ fun Home(
     }
     val (selectedBottomSheet, setSelectedBottomSheet) = remember {
         mutableStateOf(0)
+    }
+    var autoPlaying by remember { mutableStateOf(true) }
+    LaunchedEffect(autoPlaying to currentStateViewModel.isNextDisabled) {
+        while (autoPlaying && !currentStateViewModel.isNextDisabled) {
+            delay(1500)
+            commandController.nextCommand()
+            currentStateViewModel.update()
+        }
     }
     ModalBottomSheetLayout(
         sheetState = sheetState,
@@ -171,16 +176,42 @@ fun Home(
                             .padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        Box(modifier = Modifier.animateContentSize()) {
+                        Box(
+                            modifier = Modifier
+                                .animateContentSize()
+                                .defaultMinSize(Dp.Unspecified, 48.dp)
+                        ) {
                             val text = stringResource(
                                 id = currentStateViewModel.currentDescription,
                                 currentStateViewModel.state.usedKey ?: "(?)",
                                 currentStateViewModel.state.usedHashcode ?: "(?)",
                                 currentStateViewModel.state.mapSize,
                                 currentStateViewModel.state.usedIndex ?: "(?)",
-                                currentStateViewModel.state.steps
+                                currentStateViewModel.state.steps,
+                                currentStateViewModel.state.foundValue ?: "(?)",
                             )
-                            Crossfade(targetState = text) {
+                            val styled = buildAnnotatedString {
+                                var position = 0
+                                var emphasized = false
+                                while (position < text.length) {
+                                    val next = text.indexOf('*', position)
+                                    if (next < 0) {
+                                        append(text.substring(position, text.length))
+                                        position = text.length
+                                    } else {
+                                        append(text.substring(position, next))
+                                        if (emphasized) {
+                                            pop()
+                                        } else {
+                                            pushStyle(SpanStyle(fontWeight = FontWeight.Bold))
+                                        }
+                                        emphasized = !emphasized
+                                        position = next + 1
+                                    }
+                                }
+                                toAnnotatedString()
+                            }
+                            Crossfade(targetState = styled) {
                                 Text(it)
                             }
                         }
@@ -190,6 +221,7 @@ fun Home(
                         ) {
                             OutlinedButton(
                                 onClick = {
+                                    autoPlaying = false
                                     commandController.prevCommand()
                                     currentStateViewModel.update()
                                 },
@@ -198,14 +230,23 @@ fun Home(
                             ) {
                                 Text(text = "Back")
                             }
-                            Button(
+                            OutlinedButton(
                                 onClick = {
+                                    autoPlaying = false
                                     commandController.nextCommand()
                                     currentStateViewModel.update()
                                 },
                                 enabled = !currentStateViewModel.isNextDisabled
                             ) {
                                 Text(text = "Next")
+                            }
+                            Button(
+                                onClick = { autoPlaying = !autoPlaying },
+                            ) {
+                                Text(
+                                    modifier = Modifier.animateContentSize(),
+                                    text = if (autoPlaying) "Pause" else "Play"
+                                )
                             }
                         }
                     }
@@ -218,10 +259,10 @@ fun Home(
                 ) {
                     if (currentStateViewModel.currentIndex != null) {
                         scope.launch {
-                            listState.animateScrollToItem(currentStateViewModel.currentIndex!!, 0)
+                            listState.animateScrollToItem(currentStateViewModel.currentIndex!!, -180)
                         }
                     }
-                    items(currentStateViewModel.mapSize, key = { currentStateViewModel.listKey[it] ?: it }) { index ->
+                    items(currentStateViewModel.mapSize) { index ->
                         val scale: Float by animateFloatAsState(if (currentStateViewModel.currentIndex == index) 1.08f else 1f)
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -576,7 +617,7 @@ fun HashEntry(
     ) {
         Column(
             modifier = Modifier
-                .weight(0.5f)
+                .weight(0.67f)
                 .padding(12.dp),
         ) {
             Text(text = "Key", style = Typography.labelSmall)
@@ -587,7 +628,7 @@ fun HashEntry(
         }
         Box(
             modifier = Modifier
-                .weight(0.5f)
+                .weight(0.33f)
                 .fillMaxHeight()
                 .background(color = MaterialTheme.colorScheme.primaryContainer)
                 .padding(12.dp)
@@ -630,7 +671,7 @@ fun DefaultPreview() {
             )
         }
 
-        val viewModel: CurrentStateViewModel = CurrentStateViewModel()
+        val viewModel = CurrentStateViewModel()
         val commandController = viewModel.getCommandController()
         Home(rememberNavController(), commandController, viewModel)
     }

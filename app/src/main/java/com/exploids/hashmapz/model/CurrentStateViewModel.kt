@@ -11,7 +11,6 @@ import java.util.*
 import kotlin.collections.ArrayDeque
 
 class CurrentStateViewModel() : ViewModel() {
-
     var state by mutableStateOf( CurrentState(
         mapSize = 8,
         steps = 1,
@@ -40,9 +39,11 @@ class CurrentStateViewModel() : ViewModel() {
 
     var mapSize by mutableStateOf(state.mapSize)
 
-
-
-
+    init {
+        val commandController = getCommandController()
+        commandController.renewMap("Linear Probing", 0.75F)
+        update()
+    }
 
     fun update() {
         isPrevDisabled = state.prevCommands.isEmpty()
