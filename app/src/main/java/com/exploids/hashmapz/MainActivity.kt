@@ -61,6 +61,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -252,12 +253,15 @@ fun Home(
                                 .height(IntrinsicSize.Min)
                                 .animateItemPlacement(animationSpec = tween())
                         ) {
-                            Row(
+                            val color1 =
+                                if (currentStateViewModel.currentIndex == index) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.background
+                            Box(
                                 modifier = Modifier
                                     .fillMaxHeight()
-                                    .width(40.dp),
-                                horizontalArrangement = Arrangement.Start,
-                                verticalAlignment = Alignment.CenterVertically,
+                                    .width(40.dp)
+                                    .clip(MaterialTheme.shapes.small)
+                                    .background(color1),
+                                contentAlignment = Alignment.Center
                             ) {
                                 val color =
                                     if (currentStateViewModel.currentIndex == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
