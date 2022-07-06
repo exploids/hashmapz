@@ -246,7 +246,6 @@ fun Home(
                         }
                     }
                     items(currentStateViewModel.mapSize) { index ->
-                        val scale: Float by animateFloatAsState(if (currentStateViewModel.currentIndex == index) 1.08f else 1f)
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             modifier = Modifier
@@ -271,10 +270,7 @@ fun Home(
                                     color = color
                                 )
                             }
-                            Card(
-                                modifier = Modifier
-                                    .scale(scale)
-                            ) {
+                            Card {
                                 Box(
                                     modifier = Modifier
                                         .animateContentSize(animationSpec = tween())
