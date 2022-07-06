@@ -32,7 +32,7 @@ fun Wiki(navController: NavController) {
                 style = MaterialTheme.typography.bodyMedium)
             Text(text = "Open Addressing",
                 style = MaterialTheme.typography.headlineMedium)
-            Text(text = "Open addressing describes the procedure in the event of a collision, the entry's are shifted to free slots."
+            Text(text = "Open addressing describes the procedure in the event of a collision where the entries are shifted to free slots."
                 , style = MaterialTheme.typography.bodyMedium)
             Text(text = "Linear Probing",
                 style = MaterialTheme.typography.headlineMedium)
