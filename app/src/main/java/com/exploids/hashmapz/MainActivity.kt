@@ -54,6 +54,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -83,6 +84,7 @@ import com.exploids.hashmapz.ui.keys
 import com.exploids.hashmapz.ui.theme.HashmapzTheme
 import com.exploids.hashmapz.ui.theme.Typography
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.random.Random
@@ -124,15 +126,6 @@ fun Home(
     commandController: CommandController,
     currentStateViewModel: CurrentStateViewModel
 ) {
-
-    var isFirstTime by remember {
-        mutableStateOf(true)
-    }
-    if (isFirstTime) {
-        isFirstTime = false
-    }
-
-
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden
@@ -142,6 +135,14 @@ fun Home(
     }
     val (selectedBottomSheet, setSelectedBottomSheet) = remember {
         mutableStateOf(0)
+    }
+    var autoPlaying by remember { mutableStateOf(true) }
+    LaunchedEffect(autoPlaying to currentStateViewModel.isNextDisabled) {
+        while (autoPlaying && !currentStateViewModel.isNextDisabled) {
+            delay(1500)
+            commandController.nextCommand()
+            currentStateViewModel.update()
+        }
     }
     ModalBottomSheetLayout(
         sheetState = sheetState,
@@ -213,6 +214,7 @@ fun Home(
                         ) {
                             OutlinedButton(
                                 onClick = {
+                                    autoPlaying = false
                                     commandController.prevCommand()
                                     currentStateViewModel.update()
                                 },
@@ -221,14 +223,21 @@ fun Home(
                             ) {
                                 Text(text = "Back")
                             }
-                            Button(
+                            OutlinedButton(
                                 onClick = {
+                                    autoPlaying = false
                                     commandController.nextCommand()
                                     currentStateViewModel.update()
                                 },
                                 enabled = !currentStateViewModel.isNextDisabled
                             ) {
                                 Text(text = "Next")
+                            }
+                            Button(
+                                modifier = Modifier.animateContentSize(),
+                                onClick = { autoPlaying = !autoPlaying },
+                            ) {
+                                Text(text = if (autoPlaying) "Pause" else "Play")
                             }
                         }
                     }
