@@ -18,7 +18,9 @@ class CurrentStateViewModel() : ViewModel() {
         valueList = createStringList(),
         hashcodeList = createIntList(),
         nextCommands = ArrayDeque<Command>(),
-        currentDescription = R.string.explanation_getting_started
+        currentDescription = R.string.explanation_getting_started,
+        insertOrderKeyList = LinkedList(),
+        insertOrderValueList = LinkedList()
     ))
 
     var isPrevDisabled by mutableStateOf(state.prevCommands.isEmpty())
@@ -62,7 +64,7 @@ class CurrentStateViewModel() : ViewModel() {
 
 
     fun getCommandController() : CommandController{
-        return CommandController(state,this)
+        return CommandController(state)
     }
 
 

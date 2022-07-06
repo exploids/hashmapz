@@ -43,6 +43,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FloatingActionButton
@@ -164,103 +165,21 @@ fun Home(
                 HomeBottomBar(navController, scope, sheetState, setSelectedBottomSheet)
             }
         ) { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .padding(paddingValues)
-                    .padding(16.dp, 16.dp, 16.dp, 0.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+            Box(
+                modifier = Modifier.padding(paddingValues),
             ) {
-                Card {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .animateContentSize()
-                                .defaultMinSize(Dp.Unspecified, 48.dp)
-                        ) {
-                            val text = stringResource(
-                                id = currentStateViewModel.currentDescription,
-                                currentStateViewModel.state.usedKey ?: "(?)",
-                                currentStateViewModel.state.usedHashcode ?: "(?)",
-                                currentStateViewModel.state.mapSize,
-                                currentStateViewModel.state.usedIndex ?: "(?)",
-                                currentStateViewModel.state.steps,
-                                currentStateViewModel.state.foundValue ?: "(?)",
-                            )
-                            val styled = buildAnnotatedString {
-                                var position = 0
-                                var emphasized = false
-                                while (position < text.length) {
-                                    val next = text.indexOf('*', position)
-                                    if (next < 0) {
-                                        append(text.substring(position, text.length))
-                                        position = text.length
-                                    } else {
-                                        append(text.substring(position, next))
-                                        if (emphasized) {
-                                            pop()
-                                        } else {
-                                            pushStyle(SpanStyle(fontWeight = FontWeight.Bold))
-                                        }
-                                        emphasized = !emphasized
-                                        position = next + 1
-                                    }
-                                }
-                                toAnnotatedString()
-                            }
-                            Crossfade(targetState = styled) {
-                                Text(it)
-                            }
-                        }
-                        Row(
-                            modifier = Modifier.align(Alignment.End),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            OutlinedButton(
-                                onClick = {
-                                    autoPlaying = false
-                                    commandController.prevCommand()
-                                    currentStateViewModel.update()
-                                },
-                                enabled = !currentStateViewModel.isPrevDisabled
-
-                            ) {
-                                Text(text = "Back")
-                            }
-                            OutlinedButton(
-                                onClick = {
-                                    autoPlaying = false
-                                    commandController.nextCommand()
-                                    currentStateViewModel.update()
-                                },
-                                enabled = !currentStateViewModel.isNextDisabled
-                            ) {
-                                Text(text = "Next")
-                            }
-                            Button(
-                                onClick = { autoPlaying = !autoPlaying },
-                            ) {
-                                Text(
-                                    modifier = Modifier.animateContentSize(),
-                                    text = if (autoPlaying) "Pause" else "Play"
-                                )
-                            }
-                        }
-                    }
-                }
                 val listState = rememberLazyListState()
                 LazyColumn(
                     state = listState,
                     verticalArrangement = Arrangement.spacedBy(16.dp),
-                    contentPadding = PaddingValues(0.dp, 0.dp, 0.dp, 16.dp)
+                    contentPadding = PaddingValues(16.dp, 226.dp, 16.dp, 116.dp)
                 ) {
                     if (currentStateViewModel.currentIndex != null) {
                         scope.launch {
-                            listState.animateScrollToItem(currentStateViewModel.currentIndex!!, -180)
+                            listState.animateScrollToItem(
+                                currentStateViewModel.currentIndex!!,
+                                -200
+                            )
                         }
                     }
                     items(currentStateViewModel.mapSize) { index ->
@@ -313,6 +232,90 @@ fun Home(
                                             HashEntry(it[0], it[1], it[2])
                                         }
                                     }
+                                }
+                            }
+                        }
+                    }
+                }
+                Box(Modifier.padding(16.dp, 16.dp, 16.dp, 0.dp)) {
+                    ElevatedCard {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .animateContentSize()
+                                    .defaultMinSize(Dp.Unspecified, 48.dp)
+                            ) {
+                                val text = stringResource(
+                                    id = currentStateViewModel.currentDescription,
+                                    currentStateViewModel.state.usedKey ?: "(?)",
+                                    currentStateViewModel.state.usedHashcode ?: "(?)",
+                                    currentStateViewModel.state.mapSize,
+                                    currentStateViewModel.state.usedIndex ?: "(?)",
+                                    currentStateViewModel.state.steps,
+                                    currentStateViewModel.state.foundValue ?: "(?)",
+                                )
+                                val styled = buildAnnotatedString {
+                                    var position = 0
+                                    var emphasized = false
+                                    while (position < text.length) {
+                                        val next = text.indexOf('*', position)
+                                        if (next < 0) {
+                                            append(text.substring(position, text.length))
+                                            position = text.length
+                                        } else {
+                                            append(text.substring(position, next))
+                                            if (emphasized) {
+                                                pop()
+                                            } else {
+                                                pushStyle(SpanStyle(fontWeight = FontWeight.Bold))
+                                            }
+                                            emphasized = !emphasized
+                                            position = next + 1
+                                        }
+                                    }
+                                    toAnnotatedString()
+                                }
+                                Crossfade(targetState = styled) {
+                                    Text(it)
+                                }
+                            }
+                            Row(
+                                modifier = Modifier.align(Alignment.End),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                OutlinedButton(
+                                    onClick = {
+                                        autoPlaying = false
+                                        commandController.prevCommand()
+                                        currentStateViewModel.update()
+                                    },
+                                    enabled = !currentStateViewModel.isPrevDisabled
+
+                                ) {
+                                    Text(text = "Back")
+                                }
+                                OutlinedButton(
+                                    onClick = {
+                                        autoPlaying = false
+                                        commandController.nextCommand()
+                                        currentStateViewModel.update()
+                                    },
+                                    enabled = !currentStateViewModel.isNextDisabled
+                                ) {
+                                    Text(text = "Next")
+                                }
+                                Button(
+                                    onClick = { autoPlaying = !autoPlaying },
+                                ) {
+                                    Text(
+                                        modifier = Modifier.animateContentSize(),
+                                        text = if (autoPlaying) "Pause" else "Play"
+                                    )
                                 }
                             }
                         }
@@ -659,17 +662,6 @@ fun createIntList(): LinkedList<Int?> {
 @Composable
 fun DefaultPreview() {
     HashmapzTheme {
-        val currentState by remember {
-            mutableStateOf(
-                CurrentState(
-                    mapSize = 16,
-                    steps = 1,
-                    keyList = createStringList(),
-                    valueList = createStringList(),
-                    hashcodeList = createIntList()
-                )
-            )
-        }
 
         val viewModel = CurrentStateViewModel()
         val commandController = viewModel.getCommandController()
