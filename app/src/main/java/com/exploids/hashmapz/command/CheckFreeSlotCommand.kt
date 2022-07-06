@@ -11,10 +11,10 @@ class CheckFreeSlotCommand : Command {
         state.prevDescription.add(state.currentDescription)
         if (state.currentIndex?.let { keyList.get(it) } == null) {
             state.isSlotFree = true
-            state.currentDescription = R.string.check_free_slot_case1
+            state.currentDescription = R.string.check_free_slot_true
         } else {
             state.isSlotFree = false
-            state.currentDescription = R.string.check_free_slot_case2
+            state.currentDescription = R.string.check_free_slot_false
         }
 
     }
