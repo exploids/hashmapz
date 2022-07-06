@@ -32,7 +32,7 @@ val onboardPages = listOf(
     ),
     Page(
         "The Home Screen",
-        "The home screen is where the hash map is displayed. The array index is represented on the left. If a key and value are written into the array, it is shown as a node. In this example the key is \"Peach\" and the hash code is 7698696. On the other hand, when a slot is empty,  the index is displayed without a node next to it.",
+        "The home screen is where the hash map is displayed. The array index is represented on the left. If a key and value are written into the array, it is shown as a node. In this example the key is \"Tangerine\" and the hash code is 1933294285. On the other hand, when a slot is empty, the index is displayed without a node next to it.",
         R.drawable.home
     ),
     Page(
@@ -53,7 +53,7 @@ fun PageView(page: Page) {
         Image(
             painter = painterResource(page.image),
             contentDescription = null,
-            modifier = Modifier.size(200.dp)
+            modifier = Modifier.size(250.dp)
         )
         Spacer(modifier = Modifier.height(20.dp))
         Text(
