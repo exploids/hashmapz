@@ -28,22 +28,22 @@ val onboardPages = listOf(
     Page(
         "Welcome to HashmapsZ",
         "HashmapZ is an interactive learning app. It helps you understand the fundamentals of hash maps by visualizing the operations add, delete and search.",
-        R.drawable.ic_launcher_foreground
+        R.drawable.hashmapz_icon
     ),
     Page(
         "The Home Screen",
         "The home screen is where the hash map is displayed. The array index is represented on the left. If a key and value are written into the array, it is shown as a node. In this example the key is \"Peach\" and the hash code is 7698696. On the other hand, when a slot is empty,  the index is displayed without a node next to it.",
-        R.drawable.ic_launcher_foreground
+        R.drawable.home
     ),
     Page(
         "Updating, Deleting and Searching",
         "With the plus button you can add an entry to the hash map. The key will then be hashed and is used to determine the array index to put your entry in. If the slot is occupied then the algorithm searches for the next available slot to put your entry in. To delete an entry use the minus button and to search for an entry use the magnifying glass next to it.",
-        R.drawable.ic_launcher_foreground
+        R.drawable.action
     ),
     Page(
         "Creating a new map",
         "The Create Button lets your create a new hash map with a different Probing Mode and Load Factor. But be careful the existing hash map will be deleted!",
-        R.drawable.ic_launcher_foreground
+        R.drawable.renew
     )
 )
 
