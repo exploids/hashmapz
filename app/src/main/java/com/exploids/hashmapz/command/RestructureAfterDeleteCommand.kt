@@ -1,5 +1,6 @@
 package com.exploids.hashmapz.command
 
+import com.exploids.hashmapz.R
 import com.exploids.hashmapz.controller.CommandController
 import com.exploids.hashmapz.model.CurrentState
 import java.util.*
@@ -11,6 +12,7 @@ class RestructureAfterDeleteCommand : Command{
     var savedHashcodeList: LinkedList<Int> = LinkedList()
 
     override fun doCommand(state: CurrentState) {
+        state.prevDescription.add(state.currentDescription)
         savedKeyList = LinkedList(state.keyList)
         savedValueList = LinkedList(state.valueList)
         savedHashcodeList = LinkedList(state.hashcodeList)
@@ -31,12 +33,14 @@ class RestructureAfterDeleteCommand : Command{
                 state.insertOrderValueList[index]
             )
         }
+        state.currentDescription = R.string.restructure_after_delete
     }
 
     override fun undoCommand(state: CurrentState) {
         state.keyList = LinkedList(savedKeyList)
         state.valueList = LinkedList(savedValueList)
         state.hashcodeList = LinkedList(savedHashcodeList)
+        state.currentDescription = state.prevDescription.pop()
     }
 
     private fun restructureHashmap (currentState: CurrentState, key: String?, value: String?) {

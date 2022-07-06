@@ -1,5 +1,6 @@
 package com.exploids.hashmapz.command
 
+import com.exploids.hashmapz.R
 import com.exploids.hashmapz.controller.CommandController
 import com.exploids.hashmapz.model.CurrentState
 import java.util.*
@@ -8,6 +9,7 @@ import kotlin.math.pow
 
 class ExtendAndRestructureCommand : Command {
     override fun doCommand(state: CurrentState) {
+        state.prevDescription.add(state.currentDescription)
         state.savedKeyList = LinkedList(state.keyList)
         state.savedValueList = LinkedList(state.valueList)
         state.savedHashcodeList = LinkedList(state.hashcodeList)
@@ -41,10 +43,7 @@ class ExtendAndRestructureCommand : Command {
                 valueEntries[index]
             )
         }
-
-
-
-
+        state.currentDescription = R.string.resize_map
 
     }
 
@@ -53,6 +52,7 @@ class ExtendAndRestructureCommand : Command {
         state.keyList = LinkedList(state.savedKeyList)
         state.valueList = LinkedList(state.savedValueList)
         state.hashcodeList = LinkedList(state.savedHashcodeList)
+        state.currentDescription = state.prevDescription.pop()
     }
 
     private fun restructureHashmap (currentState: CurrentState, key: String?, value: String?) {

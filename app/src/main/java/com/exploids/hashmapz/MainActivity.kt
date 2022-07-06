@@ -662,17 +662,6 @@ fun createIntList(): LinkedList<Int?> {
 @Composable
 fun DefaultPreview() {
     HashmapzTheme {
-        val currentState by remember {
-            mutableStateOf(
-                CurrentState(
-                    mapSize = 16,
-                    steps = 1,
-                    keyList = createStringList(),
-                    valueList = createStringList(),
-                    hashcodeList = createIntList()
-                )
-            )
-        }
 
         val viewModel = CurrentStateViewModel()
         val commandController = viewModel.getCommandController()
