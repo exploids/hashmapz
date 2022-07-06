@@ -542,7 +542,7 @@ fun RenewBottomSheet(
     var loadfactor by remember { mutableStateOf("0.75") }
     BottomSheetContent(title = "Renew Hashmap", label = "Renew", {
         var expanded by remember { mutableStateOf(false) }
-        val availableProbingModes = listOf("Linear Probing", "Quadratic Probing", "Double Hashing")
+        val availableProbingModes = listOf("Linear Probing", "Quadratic Probing")
         var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
         ExposedDropdownMenuBox(
