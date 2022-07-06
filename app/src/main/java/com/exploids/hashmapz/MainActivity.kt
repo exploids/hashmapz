@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -72,6 +73,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -175,7 +177,11 @@ fun Home(
                             .padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        Box(modifier = Modifier.animateContentSize()) {
+                        Box(
+                            modifier = Modifier
+                                .animateContentSize()
+                                .defaultMinSize(Dp.Unspecified, 48.dp)
+                        ) {
                             val text = stringResource(
                                 id = currentStateViewModel.currentDescription,
                                 currentStateViewModel.state.usedKey ?: "(?)",
@@ -236,10 +242,12 @@ fun Home(
                                 Text(text = "Next")
                             }
                             Button(
-                                modifier = Modifier.animateContentSize(),
                                 onClick = { autoPlaying = !autoPlaying },
                             ) {
-                                Text(text = if (autoPlaying) "Pause" else "Play")
+                                Text(
+                                    modifier = Modifier.animateContentSize(),
+                                    text = if (autoPlaying) "Pause" else "Play"
+                                )
                             }
                         }
                     }
@@ -252,7 +260,7 @@ fun Home(
                 ) {
                     if (currentStateViewModel.currentIndex != null) {
                         scope.launch {
-                            listState.animateScrollToItem(currentStateViewModel.currentIndex!!, 0)
+                            listState.animateScrollToItem(currentStateViewModel.currentIndex!!, -180)
                         }
                     }
                     items(currentStateViewModel.mapSize) { index ->
