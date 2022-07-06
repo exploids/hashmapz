@@ -3,27 +3,17 @@ package com.exploids.hashmapz.command
 import com.exploids.hashmapz.controller.CommandController
 import com.exploids.hashmapz.model.CurrentState
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.math.pow
 
-class ExtendAndRestructureCommand : Command {
+class RestructureAfterDeleteCommand : Command{
+    var savedKeyList: LinkedList<String> = LinkedList()
+    var savedValueList: LinkedList<String> = LinkedList()
+    var savedHashcodeList: LinkedList<Int> = LinkedList()
+
     override fun doCommand(state: CurrentState) {
-        state.savedKeyList = LinkedList(state.keyList)
-        state.savedValueList = LinkedList(state.valueList)
-        state.savedHashcodeList = LinkedList(state.hashcodeList)
-        //Save Entries not null
-        var keyEntries: ArrayList<String> = ArrayList<String>()
-        var valueEntries: ArrayList<String> = ArrayList<String>()
-        var hashCodeEntries: ArrayList<Int> = ArrayList<Int>()
-        for (index in 0..(state.mapSize-1)) {
-            if (state.keyList[index] != null) {
-                keyEntries.add(state.keyList[index]!!)
-                valueEntries.add(state.valueList[index]!!)
-                hashCodeEntries.add(state.hashcodeList[index]!!)
-            }
-        }
-        //Extend Hashmap by creating a new one with double Entry
-        state.mapSize += state.mapSize
+        savedKeyList = LinkedList(state.keyList)
+        savedValueList = LinkedList(state.valueList)
+        savedHashcodeList = LinkedList(state.hashcodeList)
 
         state.keyList.clear()
         state.valueList.clear()
@@ -34,25 +24,19 @@ class ExtendAndRestructureCommand : Command {
             state.hashcodeList.add(null)
         }
 
-        for (index in 0..(keyEntries.size-1)) {
+        for (index in 0..(state.insertOrderKeyList.size - 1)) {
             restructureHashmap(
                 state,
-                keyEntries[index],
-                valueEntries[index]
+                state.insertOrderKeyList[index],
+                state.insertOrderValueList[index]
             )
         }
-
-
-
-
-
     }
 
     override fun undoCommand(state: CurrentState) {
-        state.mapSize -= state.mapSize/2
-        state.keyList = LinkedList(state.savedKeyList)
-        state.valueList = LinkedList(state.savedValueList)
-        state.hashcodeList = LinkedList(state.savedHashcodeList)
+        state.keyList = LinkedList(savedKeyList)
+        state.valueList = LinkedList(savedValueList)
+        state.hashcodeList = LinkedList(savedHashcodeList)
     }
 
     private fun restructureHashmap (currentState: CurrentState, key: String?, value: String?) {
@@ -86,6 +70,5 @@ class ExtendAndRestructureCommand : Command {
 
         }
     }
-
 
 }

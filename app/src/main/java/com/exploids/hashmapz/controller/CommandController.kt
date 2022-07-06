@@ -13,7 +13,7 @@ import java.util.*
 import kotlin.collections.ArrayDeque
 import kotlin.math.pow
 
-class CommandController(val currentState: CurrentState, val currentStateViewModel: CurrentStateViewModel) {
+class CommandController(val currentState: CurrentState) {
     private var usedIndex : Int = 0
     private var usedHashcode : Int = 1
 
@@ -32,9 +32,10 @@ class CommandController(val currentState: CurrentState, val currentStateViewMode
         currentState.prevCommands = Stack<Command>()
         currentState.currentDescription = R.string.explanation_getting_started
         currentState.currentIndex = null
+        currentState.insertOrderKeyList = LinkedList()
+        currentState.insertOrderValueList = LinkedList()
     }
     fun add(key: String, value: String) {
-        currentState.currentIndex = null
         currentState.steps = 1
         currentState.collisionCounter = 1.0
         currentState.nextCommands = ArrayDeque<Command>()
@@ -118,8 +119,6 @@ class CommandController(val currentState: CurrentState, val currentStateViewMode
         if (checkIfLastCommandWasExecuted()) {
             sendActionHasFinished()
         }
-        currentStateViewModel.update()
-
     }
 
     /**
@@ -139,7 +138,9 @@ class CommandController(val currentState: CurrentState, val currentStateViewMode
     private fun updateNextCommand(){
 
         var currentCommand: Command? = currentState.currentCommand
-        currentState.nextCommands!!.removeFirst()
+        if(!currentState.nextCommands.isEmpty()) {
+            currentState.nextCommands.removeFirst()
+        }
         currentState.prevCommands!!.add(currentCommand)
         if (!currentState.nextCommands!!.isEmpty()) {
             var nextCommand: Command = currentState.nextCommands!!.first()
@@ -167,7 +168,7 @@ class CommandController(val currentState: CurrentState, val currentStateViewMode
             executePrevCommand()
             updatePrevCommand()
         }
-        currentStateViewModel.update()
+        println("Prev in CommandController" + currentState.prevCommands)
     }
 
     private fun executePrevCommand() {
@@ -279,6 +280,9 @@ class CommandController(val currentState: CurrentState, val currentStateViewMode
                 commandDeck.addLast(CheckIfKeysAreEqualCommand())
                 if (keyList[index!!].equals(key)) {
                     commandDeck.addLast(DeleteEntryCommand())
+                    if (checkIfOriginalIndexIsEqual(index)) {
+                        commandDeck.addLast(RestructureAfterDeleteCommand())
+                    }
                     break
                 }
                 commandDeck.addLast(GoToIndexInStepsCommand())
@@ -301,6 +305,15 @@ class CommandController(val currentState: CurrentState, val currentStateViewMode
             }
         }
         currentState.nextCommands = commandDeck
+    }
+
+    private fun checkIfOriginalIndexIsEqual(indexEntryWasDeleted: Int) : Boolean{
+        currentState.keyList.forEach {
+            if (it.hashCode().mod(currentState.mapSize).equals(indexEntryWasDeleted)) {
+                return true
+            }
+        }
+        return false
     }
 
 
