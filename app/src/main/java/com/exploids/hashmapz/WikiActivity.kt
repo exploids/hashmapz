@@ -1,8 +1,10 @@
 package com.exploids.hashmapz
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -19,7 +21,7 @@ import com.exploids.hashmapz.ui.theme.HashmapzTheme
 @Composable
 fun Wiki(navController: NavController) {
     NestedScaffold(navController = navController, title = "Wiki") {
-        Column(modifier = Modifier.padding(it).padding(16.dp),
+        Column(modifier = Modifier.padding(it).padding(16.dp).verticalScroll(ScrollState(0)),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(text = "What are hash maps?", style = MaterialTheme.typography.titleLarge)
@@ -31,6 +33,8 @@ fun Wiki(navController: NavController) {
             Text(text = "What happens when the table is full?", style = MaterialTheme.typography.titleLarge)
             Text(text = "The table of the HashMap cannot become completely full unless you change the load factor. Because the load factor indicates how full the table can become before the table is extended automatically. Then the hash table is hashed again, i.e. the internal data structure is formed anew. The rebuilding should approximately double the table.",
                 style = MaterialTheme.typography.bodyMedium)
+            Text(text = "Deleting an entry sometimes restructures the hash map, why?", style = MaterialTheme.typography.titleLarge)
+            Text(text = "needs Text!", style = MaterialTheme.typography.bodyMedium)
         }
     }
 }
