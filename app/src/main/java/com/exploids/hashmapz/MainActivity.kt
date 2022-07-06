@@ -69,6 +69,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
@@ -196,7 +197,7 @@ fun Home(
                                         if (emphasized) {
                                             pop()
                                         } else {
-                                            pushStyle(SpanStyle(fontStyle = FontStyle.Italic))
+                                            pushStyle(SpanStyle(fontWeight = FontWeight.Bold))
                                         }
                                         emphasized = !emphasized
                                         position = next + 1
