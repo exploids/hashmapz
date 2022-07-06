@@ -5,6 +5,8 @@ import com.exploids.hashmapz.model.CurrentState
 
 class InsertEntriesCommand : Command {
     override fun doCommand(state: CurrentState) {
+        state.insertOrderKeyList.add(state.usedKey)
+        state.insertOrderValueList.add(state.usedValue)
         state.keyList[state.currentIndex!!] = state.usedKey
         state.valueList[state.currentIndex!!] = state.usedValue
         state.hashcodeList[state.currentIndex!!] = state.usedHashcode
@@ -13,6 +15,8 @@ class InsertEntriesCommand : Command {
     }
 
     override fun undoCommand(state: CurrentState) {
+        state.insertOrderValueList.remove()
+        state.insertOrderKeyList.remove()
         state.keyList[state.currentIndex!!] = null
         state.valueList[state.currentIndex!!] = null
         state.hashcodeList[state.currentIndex!!] = null
