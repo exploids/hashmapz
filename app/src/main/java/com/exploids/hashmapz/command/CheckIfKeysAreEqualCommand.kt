@@ -10,10 +10,10 @@ class CheckIfKeysAreEqualCommand : Command {
         state.prevDescription.add(state.currentDescription)
         if (state.currentIndex?.let { keyList.get(it).equals(state.usedKey) } == true) {
                 state.isKeyEqual = true
-                state.currentDescription = R.string.check_equal_case1
+                state.currentDescription = R.string.check_equal_true
             } else {
                 state.isKeyEqual = false
-                state.currentDescription = R.string.check_equal_case2
+                state.currentDescription = R.string.check_equal_false
         }
     }
 
