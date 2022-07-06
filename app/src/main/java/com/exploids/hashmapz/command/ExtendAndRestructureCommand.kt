@@ -1,5 +1,6 @@
 package com.exploids.hashmapz.command
 
+import com.exploids.hashmapz.R
 import com.exploids.hashmapz.model.CurrentState
 import java.util.*
 import kotlin.collections.ArrayList
@@ -43,7 +44,8 @@ class ExtendAndRestructureCommand : Command {
             state.hashcodeList[indexInHashmap] = hashCodeEntries[index]
         }
 
-
+        state.prevDescription.add(state.currentDescription)
+        state.currentDescription = R.string.resize_map
     }
 
     override fun undoCommand(state: CurrentState) {
@@ -51,6 +53,7 @@ class ExtendAndRestructureCommand : Command {
         state.keyList = LinkedList(state.savedKeyList)
         state.valueList = LinkedList(state.savedValueList)
         state.hashcodeList = LinkedList(state.savedHashcodeList)
+        state.currentDescription = state.prevDescription.pop()
     }
 
 
